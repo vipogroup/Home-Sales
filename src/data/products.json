@@ -1,0 +1,139 @@
+[
+  {
+    "id": 1,
+    "name": "Dell Inspiron 15 3000 - מחשב נייד מתקדם",
+    "description": "מחשב נייד Dell Inspiron 15 עם מעבד Intel Core i7 דור 12, זיכרון RAM 16GB DDR4, כונן SSD 512GB, כרטיס מסך Intel Iris Xe Graphics ומסך 15.6 אינץ' Full HD. מושלם לעבודה, לימודים ובידור. עיצוב אלגנטי וקל משקל עם ביצועים מעולים ובטריה עמידה עד 8 שעות.",
+    "price": 3500,
+    "originalPrice": 4200,
+    "category": "מחשבים ולפטופים",
+    "stock": 15,
+    "image": "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=400",
+    "purchaseType": "group",
+    "groupBuy": {
+      "isActive": true,
+      "currentParticipants": 8,
+      "minParticipants": 10,
+      "maxParticipants": 20,
+      "endDate": "2025-12-31T23:59:59.000Z"
+    },
+    "shipping": {
+      "cost": 29,
+      "deliveryDays": 2,
+      "freeShippingThreshold": 5000,
+      "expressDeliveryCost": 39,
+      "expressDeliveryAvailable": true
+    },
+    "details": {
+      "images": [
+        "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=800",
+        "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=800",
+        "https://images.unsplash.com/photo-1593642702821-c8da6771f0c6?w=800",
+        "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=800",
+        "https://images.unsplash.com/photo-1484788984921-03950022c9ef?w=800"
+      ],
+      "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "warranty": "3 שנות אחריות יצרן Dell + שירות תיקונים עד הבית",
+      "inBox": [
+        "מחשב נייד Dell Inspiron 15",
+        "מטען מקורי 65W",
+        "כבל חשמל",
+        "מדריך למשתמש בעברית",
+        "תקליטור התקנה",
+        "כרטיס אחריות",
+        "תיק נשיאה Dell מתנה"
+      ],
+      "specifications": {
+        "processor": "Intel Core i7-1255U (דור 12)",
+        "memory": "16GB DDR4 3200MHz (ניתן להרחבה עד 32GB)",
+        "storage": "512GB SSD NVMe M.2 (ניתן להרחבה)",
+        "display": "15.6 אינץ' Full HD (1920x1080) Anti-Glare",
+        "graphics": "Intel Iris Xe Graphics משולבת",
+        "connectivity": "Wi-Fi 6, Bluetooth 5.1, USB-A 3.2, USB-C, HDMI, כניסת אוזניות",
+        "battery": "3-Cell 41WHr - עד 8 שעות שימוש",
+        "os": "Windows 11 Home בעברית",
+        "weight": "1.85 ק\"ג",
+        "dimensions": "35.8 x 23.6 x 1.99 ס\"מ",
+        "keyboard": "מקלדת בעברית עם תאורה אחורית",
+        "webcam": "מצלמת HD 720p עם מיקרופון כפול"
+      },
+      "features": [
+        "עיצוב דק וקל משקל",
+        "מקלדת עם תאורה אחורית",
+        "מסך נטול בוהק",
+        "טכנולוגיית Dell Mobile Connect",
+        "חיישן טביעת אצבע",
+        "מערכת קירור מתקדמת",
+        "רמקולים סטריאו עם Waves MaxxAudio",
+        "חיבור מהיר לצגים חיצוניים"
+      ]
+    }
+  },
+  {
+    "id": 2,
+    "name": "Samsung 4-Door Fridge",
+    "description": "מקרר חסכוני No Frost",
+    "price": 2800,
+    "originalPrice": 3500,
+    "category": "מוצרי חשמל",
+    "stock": 5,
+    "image": "https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?w=400",
+    "purchaseType": "immediate",
+    "groupBuy": {
+      "isActive": true,
+      "currentParticipants": 8,
+      "minParticipants": 10,
+      "maxParticipants": 15,
+      "endDate": "2025-12-15T23:59:59.000Z"
+    },
+    "shipping": {
+      "cost": 49,
+      "deliveryDays": 1,
+      "freeShippingThreshold": 3000,
+      "expressDeliveryCost": 79,
+      "expressDeliveryAvailable": true
+    },
+    "details": {
+      "images": [
+        "https://images.unsplash.com/photo-1571175443880-49e1d93348c5?w=800",
+        "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?w=800"
+      ],
+      "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "warranty": "2 שנות אחריות",
+      "inBox": ["מקרר", "מדפים", "מדריך"]
+    }
+  },
+  {
+    "id": 3,
+    "name": "LG 55\" 4K TV",
+    "description": "טלוויזיה חכמה 4K עם HDR",
+    "price": 2200,
+    "originalPrice": 2800,
+    "category": "אלקטרוניקה",
+    "stock": 8,
+    "image": "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=400",
+    "purchaseType": "group",
+    "groupBuy": {
+      "isActive": true,
+      "currentParticipants": 12,
+      "minParticipants": 10,
+      "maxParticipants": 20,
+      "endDate": "2025-11-30T23:59:59.000Z"
+    },
+    "shipping": {
+      "cost": 39,
+      "deliveryDays": 3,
+      "freeShippingThreshold": 2500,
+      "expressDeliveryCost": 59,
+      "expressDeliveryAvailable": false
+    },
+    "details": {
+      "images": [
+        "https://images.unsplash.com/photo-1593784991095-a205069470b6?w=800",
+        "https://images.unsplash.com/photo-1601944179066-29786cb9d32a?w=800"
+      ],
+      "video": "https://www.youtube.com/embed/dQw4w9WgXcQ",
+      "warranty": "2 שנות אחריות",
+      "inBox": ["טלוויזיה", "שלט", "כבל חשמל", "מדריך"]
+    }
+  }
+]

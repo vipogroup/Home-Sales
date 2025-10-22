@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>Admin Login</title>
+  <!-- Dynamic theme (from server) -->
+  <link rel="stylesheet" href="/assets/theme.css">
+  <!-- Static theme (fallback) -->
+  <link rel="stylesheet" href="/assets/css/theme.css">
+  <!-- Base styles -->
+  <link rel="stylesheet" href="/assets/css/style-base.css">
+  <!-- RTL fixes -->
+  <style>
+    /* RTL overrides */
+    body { text-align: right; }
+    input, textarea, select { text-align: right; }
+    .field input { padding-right: 12px; }
+    
+    /* Prevent horizontal scroll on mobile */
+    html, body { overflow-x: hidden; max-width: 100%; }
+    .card { box-sizing: border-box; width: 100%; max-width: 400px; margin: 0 auto; }
+  </style>
+</head>
+<body class="admin-login-body">
+  <div class="card">
+    <h1 class="title">התחברות מנהל</h1>
+    <p class="subtitle">אנא הזן שם משתמש וסיסמה</p>
+    <form id="loginForm">
+      <div class="field">
+        <label>שם משתמש</label>
+        <input id="user" autocomplete="username" required />
+      </div>
+      <div class="field">
+        <label>סיסמה</label>
+        <input id="password" type="password" autocomplete="current-password" required />
+      </div>
+      <button type="submit">התחבר</button>
+      <div id="err" class="err"></div>
+    </form>
+  </div>
+
+  <script type="module" src="/assets/js/login.js"></script>
+</body>
+</html>

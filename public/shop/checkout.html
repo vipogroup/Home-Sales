@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="format-detection" content="telephone=no">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#667eea">
+    <title>תשלום מאובטח - VIPO Group Buy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/theme.css"> <!-- Dynamic theme (from server) -->
+    <link rel="stylesheet" href="/assets/css/theme.css"> <!-- Static theme (fallback) -->
+    <link rel="stylesheet" href="/assets/css/style-base.css">
+    <link rel="stylesheet" href="/assets/css/style-shop.css">
+    </head>
+<body>
+    <div class="container">
+        <button class="back-btn"><i class="fas fa-arrow-right"></i> חזור לדף המוצרים</button>
+        <div class="checkout-header">
+            <h1 class="checkout-title">תשלום מאובטח</h1>
+            <div class="security-badge"><i class="fas fa-shield-alt"></i> מאובטח ב-SSL</div>
+        </div>
+        <div id="loading" class="loading"><div class="spinner"></div><p>טוען פרטי הזמנה...</p></div>
+        <div id="checkoutContent" class="checkout-content hidden">
+            <div class="order-summary">
+                <h2 class="section-title"><i class="fas fa-shopping-cart"></i> סיכום הזמנה</h2>
+                <div id="orderItems"></div>
+                <div class="price-breakdown">
+                    <div class="price-row"><span>מחיר מוצר:</span><span id="productPrice">₪0</span></div>
+                    <div class="price-row"><span>משלוח:</span><span id="shippingPrice">₪29</span></div>
+                    <div class="price-row hidden" id="deliveryPaymentFeeRow"><span>עמלת תשלום בקבלה:</span><span id="deliveryPaymentFee">₪15</span></div>
+                    <div class="price-row"><span>מע"מ (18%):</span><span id="vatPrice">₪0</span></div>
+                    <div class="total-row"><span>סה"כ לתשלום:</span><span id="totalPrice">₪0</span></div>
+                </div>
+                <div class="security-info"><i class="fas fa-lock"></i> התשלום מאובטח ומוצפן ב-256bit SSL</div>
+            </div>
+            <div class="payment-form">
+                <h2 class="section-title"><i class="fas fa-credit-card"></i> פרטי תשלום</h2>
+                <form id="paymentForm">
+                    <div class="form-group">
+                        <label class="form-label">בחר אמצעי תשלום:</label>
+                        <div class="payment-methods">
+                            <div class="payment-method selected" data-method="online"><i class="fas fa-credit-card"></i><div>תשלום מקוון</div><small>מיידי ומאובטח</small></div>
+                            <div class="payment-method" data-method="cash_on_delivery"><i class="fas fa-money-bill-wave"></i><div>מזומן בקבלה</div><small>תשלום בעת המסירה</small></div>
+                            <div class="payment-method" data-method="card_on_delivery"><i class="fas fa-credit-card"></i><div>אשראי בקבלה</div><small>חיוב בעת המסירה</small></div>
+                            <div class="payment-method" data-method="installments"><i class="fas fa-calendar-alt"></i><div>תשלומים</div><small>עד 36 תשלומים</small></div>
+                        </div>
+                    </div>
+                    <div id="onlinePaymentDetails" class="payment-details-section">
+                        <div class="payplus-container">
+                            <div class="payplus-logo"><img src="https://www.payplus.co.il/wp-content/uploads/2021/03/payplus-logo.png" alt="PayPlus"></div>
+                            <p class="text-center text-sm muted">תשלום מאובטח דרך PayPlus - ספק התשלומים המוביל בישראל</p>
+                        </div>
+                    </div>
+                    <div id="deliveryPaymentDetails" class="payment-details-section hidden">
+                        <div class="delivery-payment-info">
+                            <div class="info-card">
+                                <h4><i class="fas fa-info-circle"></i> תשלום בעת קבלת המוצר</h4>
+                                <ul>
+                                    <li><strong>מזומן:</strong> הכן את הסכום המדויק - ₪<span id="cashAmount">0</span></li>
+                                    <li><strong>אשראי:</strong> השליח יביא מכשיר חיוב נייד</li>
+                                    <li><strong>זמינות:</strong> רק במשלוח עד הבית</li>
+                                    <li><strong>עמלה:</strong> ₪15 נוסף לתשלום בקבלה</li>
+                                </ul>
+                            </div>
+                            <div class="delivery-payment-note">
+                                <p><i class="fas fa-exclamation-triangle"></i> <strong>חשוב לדעת:</strong></p>
+                                <p>• תשלום בקבלה זמין רק למשלוח עד הבית</p>
+                                <p>• באיסוף עצמי - תשלום במקום בלבד</p>
+                                <p>• עמלת טיפול ₪15 תתווסף לסכום הכולל</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="installmentsDetails" class="payment-details-section hidden">
+                        <div class="installments-info">
+                            <div class="info-card">
+                                <h4><i class="fas fa-calendar-alt"></i> תשלום בתשלומים</h4>
+                                <div class="installments-options">
+                                    <div class="installment-option" data-n="3"><div class="installment-number">3</div><div class="installment-details"><div class="installment-title">3 תשלומים</div><div class="installment-amount">₪<span id="installment3">0</span> לחודש</div><div class="installment-note">ללא ריבית</div></div></div>
+                                    <div class="installment-option" data-n="6"><div class="installment-number">6</div><div class="installment-details"><div class="installment-title">6 תשלומים</div><div class="installment-amount">₪<span id="installment6">0</span> לחודש</div><div class="installment-note">ללא ריבית</div></div></div>
+                                    <div class="installment-option" data-n="12"><div class="installment-number">12</div><div class="installment-details"><div class="installment-title">12 תשלומים</div><div class="installment-amount">₪<span id="installment12">0</span> לחודש</div><div class="installment-note">ריבית 2.9%</div></div></div>
+                                    <div class="installment-option" data-n="24"><div class="installment-number">24</div><div class="installment-details"><div class="installment-title">24 תשלומים</div><div class="installment-amount">₪<span id="installment24">0</span> לחודש</div><div class="installment-note">ריבית 3.9%</div></div></div>
+                                    <div class="installment-option" data-n="36"><div class="installment-number">36</div><div class="installment-details"><div class="installment-title">36 תשלומים</div><div class="installment-amount">₪<span id="installment36">0</span> לחודש</div><div class="installment-note">ריבית 4.9%</div></div></div>
+                                </div>
+                                <div class="selected-installment hidden" id="selectedInstallment"><div class="selected-info"><i class="fas fa-check-circle"></i><span>נבחר: <span id="selectedInstallmentText">3 תשלומים</span></span></div></div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+                <button class="pay-button" id="btnPay">לתשלום</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module" src="/assets/js/design.js"></script>
+    <script type="module" src="/assets/js/checkout.js"></script>
+</body>
+</html>

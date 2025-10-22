@@ -1,0 +1,24 @@
+/* Admin login layout */
+.admin-login-body {
+  display: flex;
+  min-height: 100vh;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg,#f5f7fa,#c3cfe2);
+}
+
+/* Card and elements inside login page */
+.admin-login-body .card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+  padding: 24px;
+}
+.admin-login-body .title { margin:0 0 8px 0; }
+.admin-login-body .subtitle { margin:0 0 16px 0; color:#666; font-size: 0.95rem; }
+.admin-login-body .field { display:flex; flex-direction:column; gap:6px; margin-bottom:12px; }
+.admin-login-body input { padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px; font-size: 1rem; }
+.admin-login-body button { padding: 10px 14px; border: none; border-radius: 10px; background: linear-gradient(135deg,#667eea,#764ba2); color: #fff; cursor:pointer; font-weight:700; width:100%; }
+.admin-login-body .err { color:#c62828; min-height: 24px; margin-top:8px; }

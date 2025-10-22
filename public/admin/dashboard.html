@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Unified Admin Dashboard</title>
+  <link rel="stylesheet" href="/assets/css/theme.css"/>
+  <link rel="stylesheet" href="/assets/css/components.css"/>
+  <link rel="stylesheet" href="/assets/css/dashboard.css"/>
+  <link rel="stylesheet" href="/assets/css/style-base.css"/>
+</head>
+<body>
+  <div class="container">
+    <div class="flex items-center justify-between gap-12">
+      <h1>👨‍💼 <span data-i18n="ui.title">Unified Admin Dashboard (Phase 1)</span></h1>
+      <div class="flex items-center gap-8">
+        <label class="label" for="langSelect"><span data-i18n="ui.language">שפה</span></label>
+        <select id="langSelect" class="input min-w-180">
+          <option value="he">עברית</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <button id="logoutBtn" class="btn btn-outline-danger"><span data-i18n="ui.logout">התנתקות</span></button>
+    </div>
+    <p id="health" data-i18n="ui.checkingServer">בודק שרת...</p>
+    <div class="flex items-center gap-8 wrap mt-8 mb-12">
+      <strong data-i18n="db.tools">כלי DB:</strong>
+      <button id="dbStatusBtn" class="btn btn-outline"><span data-i18n="db.check">בדיקת חיבור DB</span></button>
+      <button id="seedProductsBtn" class="btn btn-outline-primary"><span data-i18n="db.seedDemo">ייבוא מוצרי דמו ל-DB</span></button>
+      <small id="dbStatusText" class="muted"></small>
+    </div>
+
+    <div class="flex gap-8 wrap mt-16 mb-16">
+      <button id="tabAgents" class="btn"><span data-i18n="tabs.agents">סוכנים</span></button>
+      <button id="tabProducts" class="btn"><span data-i18n="tabs.products">מוצרים</span></button>
+      <button id="tabOrders" class="btn"><span data-i18n="tabs.orders">הזמנות</span></button>
+      <button id="tabDesign" class="btn btn-primary"><span data-i18n="tabs.design">עיצוב</span></button>
+    </div>
+
+    <section id="agentsSection" class="hidden">
+      <h2>סוכנים</h2>
+      <div id="agentsContainer">בשלב זה הטאב בבנייה. בקרוב יוצגו רשימות סוכנים ופעולות ניהול.</div>
+    </section>
+
+    <section id="ordersSection" class="hidden">
+      <h2>הזמנות</h2>
+      <div class="flex items-center gap-12 mb-8">
+        <div id="ordersTotals" class="muted">סה"כ הזמנות: 0 | סה"כ סכום: ₪0</div>
+        <button id="exportOrdersBtn" class="btn btn-outline-success">ייצוא CSV</button>
+      </div>
+      <div class="flex wrap gap-8 align-end mb-8">
+        <div>
+          <label class="label">מתאריך</label>
+          <input type="date" id="ordersFrom" class="input"/>
+        </div>
+        <div>
+          <label class="label">עד תאריך</label>
+          <input type="date" id="ordersTo" class="input"/>
+        </div>
+        <div>
+          <label class="label">מוצר</label>
+          <select id="ordersProduct" class="input min-w-180"><option value="">הכל</option></select>
+        </div>
+        <div>
+          <label class="label">סוכן</label>
+          <select id="ordersAgent" class="input min-w-180"><option value="">הכל</option></select>
+        </div>
+        <button id="ordersFilterBtn" class="btn btn-primary">סנן</button>
+        <button id="ordersClearBtn" class="btn btn-outline">נקה</button>
+      </div>
+      <div id="ordersContainer">טוען הזמנות...</div>
+      <div class="flex items-center gap-12 mb-8 mt-16">
+        <div id="salesTotals" class="muted">סה"כ מכירות: 0 | סה"כ עמלות: ₪0</div>
+        <button id="exportSalesBtn" class="btn btn-outline-success">ייצוא CSV</button>
+      </div>
+      <div id="salesContainer">טוען מכירות...</div>
+      <div class="card mt-16">
+        <h3 class="mt-0">אנליטיקות הזמנות</h3>
+        <div class="grid-1 gap-12">
+          <div>
+            <h4 class="muted mt-0 mb-6">מכירות לפי תאריך</h4>
+            <canvas id="chartByDate" height="120"></canvas>
+          </div>
+          <div class="grid-2 gap-12">
+            <div>
+              <h4 class="muted mt-0 mb-6">מוצרים מובילים</h4>
+              <canvas id="chartByProduct" height="160"></canvas>
+            </div>
+            <div>
+              <h4 class="muted mt-0 mb-6">סוכנים מובילים</h4>
+              <canvas id="chartByAgent" height="160"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="productsSection" class="hidden">
+      <h2>מוצרים</h2>
+      <div id="productsContainer" class="mb-16">טוען מוצרים...</div>
+      <div id="participantsBox" class="card mb-16">
+        <div class="flex items-center justify-between">
+          <h3 class="m-0">משתתפים במוצר</h3>
+          <div class="flex items-center gap-8">
+            <small id="participantsHint" class="muted">בחר מוצר לצפייה במשתתפים</small>
+            <button id="exportParticipantsBtn" class="btn btn-outline-primary" disabled>ייצוא CSV</button>
+          </div>
+        </div>
+        <div id="participantsContainer" class="mt-8 muted">—</div>
+      </div>
+      <div class="card">
+        <h3>הוסף מוצר</h3>
+        <form id="newProductForm" class="grid-2 gap-8">
+          <input id="np_name" placeholder="שם מוצר" required class="input"/>
+          <input id="np_category" placeholder="קטגוריה" class="input"/>
+          <div>
+            <label class="label">סוג רכישה</label>
+            <select id="np_purchaseType" class="input">
+              <option value="immediate">רכישה מידית</option>
+              <option value="group">רכישה קבוצתית (מחיר מפעל ~60 ימי עסקים)</option>
+            </select>
+          </div>
+          <input id="np_price" type="number" placeholder="מחיר (₪)" required class="input"/>
+          <input id="np_originalPrice" type="number" placeholder="מחיר מקורי (₪)" required class="input"/>
+          <input id="np_image" placeholder="תמונת מוצר (URL)" class="input col-span-2"/>
+          <button type="submit" class="btn btn-primary col-span-2">הוסף</button>
+        </form>
+      </div>
+    </section>
+
+    <section id="designSection">
+      <h2 data-i18n="design.title">עיצוב</h2>
+      <div id="designPresetsSection" class="preset-section">
+        <h3 class="preset-title">
+          <i class="fas fa-palette"></i>
+          <span data-i18n="design.presetsTitle">ערכות צבעים מוכנות מאתרי מכירות מובילים</span>
+        </h3>
+        <div class="preset-subtitle" data-i18n="design.presetsIntro">בחר ערכת צבעים מוכחת מאתרי מכירות בינלאומיים מובילים - לחץ על כל אחת לתצוגה מקדימה</div>
+        
+        <div class="preset-grid">
+          <div class="preset-card" data-preset="ebay">
+            <div class="preset-header">
+              <span class="preset-name">eBay Style</span>
+              <span class="preset-badge">🟢</span>
+            </div>
+            <div class="preset-colors">
+              <div class="color-dot" style="background: #0064d2"></div>
+              <div class="color-dot" style="background: #e53238"></div>
+              <div class="color-dot" style="background: #f7c41f"></div>
+              <div class="color-dot" style="background: #86b817"></div>
+            </div>
+            <div class="preset-desc">דינמי - צבעים עזים</div>
+          </div>
+
+          <div class="preset-card" data-preset="amazon">
+            <div class="preset-header">
+              <span class="preset-name">Amazon Style</span>
+              <span class="preset-badge">🟠</span>
+            </div>
+            <div class="preset-colors">
+              <div class="color-dot" style="background: #ff9900"></div>
+              <div class="color-dot" style="background: #232f3e"></div>
+              <div class="color-dot" style="background: #37475a"></div>
+              <div class="color-dot" style="background: #ffffff"></div>
+            </div>
+            <div class="preset-desc">מקצועי - כתום וכחול כהה</div>
+          </div>
+
+          <div class="preset-card" data-preset="shopify">
+            <div class="preset-header">
+              <span class="preset-name">Shopify Style</span>
+              <span class="preset-badge">🟢</span>
+            </div>
+            <div class="preset-colors">
+              <div class="color-dot" style="background: #7ab55c"></div>
+              <div class="color-dot" style="background: #004c3f"></div>
+              <div class="color-dot" style="background: #bf0711"></div>
+              <div class="color-dot" style="background: #ffffff"></div>
+            </div>
+            <div class="preset-desc">ירוק - טבעי ומקצועי</div>
+          </div>
+
+          <div class="preset-card" data-preset="aliexpress">
+            <div class="preset-header">
+              <span class="preset-name">AliExpress Style</span>
+              <span class="preset-badge">🔴</span>
+            </div>
+            <div class="preset-colors">
+              <div class="color-dot" style="background: #ff4747"></div>
+              <div class="color-dot" style="background: #ff6a00"></div>
+              <div class="color-dot" style="background: #ffffff"></div>
+              <div class="color-dot" style="background: #f5f5f5"></div>
+            </div>
+            <div class="preset-desc">אדום - אנרגטי וחם</div>
+          </div>
+
+          <div class="preset-card" data-preset="walmart">
+            <div class="preset-header">
+              <span class="preset-name">Walmart Style</span>
+              <span class="preset-badge">🔵</span>
+            </div>
+            <div class="preset-colors">
+              <div class="color-dot" style="background: #0071ce"></div>
+              <div class="color-dot" style="background: #ffc220"></div>
+              <div class="color-dot" style="background: #ffffff"></div>
+              <div class="color-dot" style="background: #e6f3ff"></div>
+            </div>
+            <div class="preset-desc">כחול - אמין ומקצועי</div>
+          </div>
+
+          <div class="preset-card" data-preset="etsy">
+            <div class="preset-header">
+              <span class="preset-name">Etsy Style</span>
+              <span class="preset-badge">🟠</span>
+            </div>
+            <div class="preset-colors">
+              <div class="color-dot" style="background: #f1641e"></div>
+              <div class="color-dot" style="background: #222222"></div>
+              <div class="color-dot" style="background: #ffffff"></div>
+              <div class="color-dot" style="background: #f7f7f7"></div>
+            </div>
+            <div class="preset-desc">כתום - יצירתי ואמנותי</div>
+          </div>
+        </div>
+
+        <div class="preset-info">
+          <i class="fas fa-info-circle"></i>
+          <span>לחיצה על כל ערכת צבעים תחליף אוטומטית את כל הצבעים בטופס</span>
+        </div>
+      </div>
+      <div id="designPreviewPanel" class="design-preview-panel">
+        <div class="section-header">
+          <h3 class="mt-0">תצוגה מקדימה חיה</h3>
+          <div class="flex gap-8 wrap preview-controls">
+            <div class="flex items-center gap-6">
+              <label class="label">בחר עמוד</label>
+              <select id="previewPageSelect" class="input min-w-220">
+                <option value="/product/1">דף מוצר</option>
+                <option value="/shop">דף מוצרים</option>
+                <option value="/shop/checkout">דף תשלום</option>
+                <option value="/shop/payment-success">תשלום הצליח</option>
+                <option value="/shop/payment-cancel">תשלום בוטל</option>
+                <option value="/my-orders">הזמנות שלי</option>
+              </select>
+            </div>
+            <div class="device-tabs flex gap-6">
+              <button type="button" class="btn btn-outline btn-sm" data-size="mobile">טלפון</button>
+              <button type="button" class="btn btn-outline btn-sm" data-size="tablet">טאבלט</button>
+              <button type="button" class="btn btn-primary btn-sm" data-size="desktop">דסקטופ</button>
+            </div>
+            <button id="refreshPreviewsBtn" type="button" class="btn btn-outline">רענון תצוגות</button>
+          </div>
+        </div>
+        <div class="preview-main">
+          <div class="preview-card preview-options" id="previewOptions">
+            <div class="preview-options-header">
+              <h4 class="m-0">אפשרויות צבע לעמוד</h4>
+              <div class="muted text-sm">האופציות יתאימו אוטומטית לעמוד שנבחר</div>
+              <div class="preview-options-actions">
+                <label for="poPresetSelect" class="muted text-sm">ערכות מוכחות:</label>
+                <select id="poPresetSelect" class="select-sm"></select>
+                <button id="poSaveBtn" type="button" class="btn btn-primary btn-sm">שמור</button>
+                <button id="poResetBtn" type="button" class="btn btn-outline btn-sm">בטל שינויים</button>
+                <span id="previewOptionsMsg" class="muted text-sm"></span>
+              </div>
+            </div>
+            <div id="previewOptionsList" class="preview-options-list"></div>
+          </div>
+          <div class="preview-card">
+            <iframe id="primaryPreviewFrame" class="preview-frame frame-desktop" data-src="/product/1" title="Preview"></iframe>
+          </div>
+        </div>
+      </div>
+      <form id="designForm" class="design-form">
+        
+        <!-- צבעי מותג עיקריים -->
+        <div class="design-category">
+          <h4 class="design-category-title">
+            <i class="fas fa-palette"></i>
+            <span data-i18n="design.brandColors">צבעי מותג עיקריים</span>
+          </h4>
+          <div class="color-grid">
+            <div class="color-field">
+              <label class="color-label">צבע ראשי</label>
+              <div class="color-box" style="background: #ff6b00"></div>
+              <input id="ds_joinBtnColor" type="color" value="#ff6b00" class="color-picker"/>
+              <span class="color-code">#ff6b00</span>
+            </div>
+            <div class="color-field">
+              <label class="color-label">צבע משני</label>
+              <div class="color-box" style="background: #0071ce"></div>
+              <input id="ds_progressBarColor" type="color" value="#0071ce" class="color-picker"/>
+              <span class="color-code">#0071ce</span>
+            </div>
+            <div class="color-field">
+              <label class="color-label">צבע הדגשה</label>
+              <div class="color-box" style="background: #e74c3c"></div>
+              <input id="ds_categoryTextColor" type="color" value="#e74c3c" class="color-picker"/>
+              <span class="color-code">#e74c3c</span>
+            </div>
+            <div class="color-field">
+              <label class="color-label">צבע טקסט</label>
+              <div class="color-box" style="background: #333333"></div>
+              <input id="ds_priceTextColor" type="color" value="#333333" class="color-picker"/>
+              <span class="color-code">#333333</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- רקעים וכותרות -->
+        <div class="design-category">
+          <h4 class="design-category-title">
+            <i class="fas fa-image"></i>
+            <span data-i18n="design.backgrounds">רקעים וכותרות</span>
+          </h4>
+          <div class="design-grid">
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.headerBgColor">רקע כותרת</span>
+                <div class="color-input-wrapper">
+                  <input id="ds_headerBgColor" type="color" value="#ffffff" class="color-input"/>
+                  <span class="color-preview"></span>
+                </div>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.mainTitleColor">צבע כותרת ראשית</span>
+                <div class="color-input-wrapper">
+                  <input id="ds_mainTitleColor" type="color" value="#1a1a1a" class="color-input"/>
+                  <span class="color-preview"></span>
+                </div>
+              </label>
+            </div>
+            <div class="design-field full-width">
+              <label class="design-label">
+                <span data-i18n="design.pageBg">רקע עמוד</span>
+                <input id="ds_pageBg" type="text" value="linear-gradient(135deg,#00a8b5 0%,#006b75 100%)" class="gradient-input" placeholder="CSS gradient או צבע"/>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- תגיות והתראות -->
+        <div class="design-category">
+          <h4 class="design-category-title">
+            <i class="fas fa-tags"></i>
+            <span data-i18n="design.badges">תגיות והתראות</span>
+          </h4>
+          <div class="design-grid">
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.discountBadgeBg">רקע תג הנחה</span>
+                <div class="color-input-wrapper">
+                  <input id="ds_discountBadgeBg" type="color" value="#ef4444" class="color-input"/>
+                  <span class="color-preview"></span>
+                </div>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.discountBadgeText">טקסט תג הנחה</span>
+                <div class="color-input-wrapper">
+                  <input id="ds_discountBadgeText" type="color" value="#ffffff" class="color-input"/>
+                  <span class="color-preview"></span>
+                </div>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.daysLeftColor">צבע ימים נותרים</span>
+                <div class="color-input-wrapper">
+                  <input id="ds_daysLeftColor" type="color" value="#f59e0b" class="color-input"/>
+                  <span class="color-preview"></span>
+                </div>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.warningBorder">גבול אזהרה</span>
+                <div class="color-input-wrapper">
+                  <input id="ds_warningBorder" type="color" value="#f59e0b" class="color-input"/>
+                  <span class="color-preview"></span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- כפתורים ואלמנטים -->
+        <div class="design-category">
+          <h4 class="design-category-title">
+            <i class="fas fa-mouse-pointer"></i>
+            <span data-i18n="design.buttons">כפתורים ואלמנטים</span>
+          </h4>
+          <div class="design-grid">
+            <div class="design-field full-width">
+              <label class="design-label">
+                <span data-i18n="design.detailsBtnBg">רקע כפתור פרטים</span>
+                <input id="ds_detailsBtnBg" type="text" value="linear-gradient(135deg,#00a8b5 0%,#008a96 100%)" class="gradient-input" placeholder="CSS gradient או צבע"/>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.secondaryBtnBg">רקע כפתור משני</span>
+                <input id="ds_secondaryBtnBg" type="text" value="#f1f3f5" class="gradient-input"/>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.secondaryBtnText">טקסט כפתור משני</span>
+                <div class="color-input-wrapper">
+                  <input id="ds_secondaryBtnText" type="color" value="#4a5568" class="color-input"/>
+                  <span class="color-preview"></span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- מידות ועיצוב -->
+        <div class="design-category">
+          <h4 class="design-category-title">
+            <i class="fas fa-ruler-combined"></i>
+            <span data-i18n="design.dimensions">מידות ועיצוב</span>
+          </h4>
+          <div class="design-grid">
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.cardRadius">רדיוס כרטיס</span>
+                <input id="ds_cardRadius" type="text" value="16px" class="dimension-input" placeholder="px, rem, %"/>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.buttonRadius">רדיוס כפתור</span>
+                <input id="ds_buttonRadius" type="text" value="12px" class="dimension-input" placeholder="px, rem, %"/>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.gridMin">רוחב מינימלי כרטיס</span>
+                <input id="ds_gridMin" type="text" value="300px" class="dimension-input" placeholder="px, rem"/>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.gridGap">מרווח בין כרטיסים</span>
+                <input id="ds_gridGap" type="text" value="1.5rem" class="dimension-input" placeholder="px, rem"/>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- אזורי מידע -->
+        <div class="design-category">
+          <h4 class="design-category-title">
+            <i class="fas fa-info-circle"></i>
+            <span data-i18n="design.infoSections">אזורי מידע</span>
+          </h4>
+          <div class="design-grid">
+            <div class="design-field full-width">
+              <label class="design-label">
+                <span data-i18n="design.priceSectionBg">רקע אזור מחיר</span>
+                <input id="ds_priceSectionBg" type="text" value="linear-gradient(135deg,#00a8b5 0%,#008a96 100%)" class="gradient-input"/>
+              </label>
+            </div>
+            <div class="design-field full-width">
+              <label class="design-label">
+                <span data-i18n="design.shippingInfoBg">רקע מידע משלוח</span>
+                <input id="ds_shippingInfoBg" type="text" value="linear-gradient(135deg,#3b82f6 0%,#1e40af 100%)" class="gradient-input"/>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.installmentsInfoBg">רקע מידע תשלומים</span>
+                <div class="color-input-wrapper">
+                  <input id="ds_installmentsInfoBg" type="color" value="#dbeafe" class="color-input"/>
+                  <span class="color-preview"></span>
+                </div>
+              </label>
+            </div>
+            <div class="design-field full-width">
+              <label class="design-label">
+                <span data-i18n="design.categoryChipBg">רקע תג קטגוריה</span>
+                <input id="ds_categoryChipBg" type="text" value="linear-gradient(135deg,#00a8b5 0%,#008a96 100%)" class="gradient-input"/>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- הודעות מערכת -->
+        <div class="design-category">
+          <h4 class="design-category-title">
+            <i class="fas fa-bell"></i>
+            <span data-i18n="design.systemMessages">הודעות מערכת</span>
+          </h4>
+          <div class="design-grid">
+            <div class="design-field full-width">
+              <label class="design-label">
+                <span data-i18n="design.infoBg">רקע הודעת מידע</span>
+                <input id="ds_infoBg" type="text" value="linear-gradient(135deg,#3b82f6 0%,#1e40af 100%)" class="gradient-input"/>
+              </label>
+            </div>
+            <div class="design-field full-width">
+              <label class="design-label">
+                <span data-i18n="design.warningBg">רקע הודעת אזהרה</span>
+                <input id="ds_warningBg" type="text" value="linear-gradient(135deg,#fef3c7 0%,#fde68a 100%)" class="gradient-input"/>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.successBg">רקע הודעת הצלחה</span>
+                <input id="ds_successBg" type="text" value="rgba(16, 185, 129, 0.1)" class="gradient-input"/>
+              </label>
+            </div>
+            <div class="design-field">
+              <label class="design-label">
+                <span data-i18n="design.successBorder">גבול הודעת הצלחה</span>
+                <div class="color-input-wrapper">
+                  <input id="ds_successBorder" type="color" value="#10b981" class="color-input"/>
+                  <span class="color-preview"></span>
+                </div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- כפתור שמירה -->
+        <div class="design-save-section">
+          <button type="submit" class="btn btn-success design-save-btn" data-i18n="design.save">
+            <i class="fas fa-save"></i>
+            שמירת עיצוב
+          </button>
+          <div class="design-save-help">
+            <i class="fas fa-info-circle"></i>
+            השינויים יחולו על כל דפי החנות לאחר השמירה
+          </div>
+        </div>
+      </form>
+      <div id="designSaveMsg" class="mt-8"></div>
+    </section>
+  </div>
+  <div id="editProductModal" class="modal-overlay">
+    <div class="modal-content">
+      <h3 class="mt-0">עריכת מוצר</h3>
+      <input type="hidden" id="ep_id"/>
+      <div class="grid-2 gap-10">
+        <div>
+          <label>שם</label>
+          <input id="ep_name" class="w-100 input"/>
+        </div>
+        <div>
+          <label>קטגוריה</label>
+          <input id="ep_category" class="w-100 input"/>
+        </div>
+        <div>
+          <label>מחיר (₪)</label>
+          <input id="ep_price" type="number" class="w-100 input"/>
+        </div>
+        <div>
+          <label>מחיר מקורי (₪)</label>
+          <input id="ep_originalPrice" type="number" class="w-100 input"/>
+        </div>
+        <div>
+          <label>מלאי</label>
+          <input id="ep_stock" type="number" class="w-100 input"/>
+        </div>
+        <div>
+          <label>תמונה (URL)</label>
+          <input id="ep_image" class="w-100 input"/>
+        </div>
+        <div class="col-span-2 grid-4 gap-10 border-top pt-10">
+          <div>
+            <label>סוג רכישה</label>
+            <select id="ep_purchaseType" class="w-100 input">
+              <option value="immediate">רכישה מידית</option>
+              <option value="group">רכישה קבוצתית (מחיר מפעל ~60 ימי עסקים)</option>
+            </select>
+          </div>
+          <div>
+            <label>GroupBuy פעיל</label>
+            <select id="ep_gb_active" class="w-100 input"><option value="true">כן</option><option value="false">לא</option></select>
+          </div>
+          <div>
+            <label>נוכחי</label>
+            <input id="ep_gb_current" type="number" class="w-100 input"/>
+          </div>
+          <div>
+            <label>מינ'</label>
+            <input id="ep_gb_min" type="number" class="w-100 input"/>
+          </div>
+          <div>
+            <label>מקס'</label>
+            <input id="ep_gb_max" type="number" class="w-100 input"/>
+          </div>
+          <div>
+            <label>תאריך סיום</label>
+            <input id="ep_gb_end" type="date" class="w-100 input"/>
+          </div>
+          <div>
+            <label>משלוח (₪)</label>
+            <input id="ep_ship_cost" type="number" class="w-100 input"/>
+          </div>
+          <div>
+            <label>ימי משלוח</label>
+            <input id="ep_ship_days" type="number" class="w-100 input"/>
+          </div>
+        </div>
+      </div>
+      <div class="flex gap-8 justify-end mt-12">
+        <button id="editProductCancel" class="btn btn-outline">ביטול</button>
+        <button id="editProductSave" class="btn btn-success">שמור</button>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="/assets/js/app.js"></script>
+  <script type="module" src="/assets/js/admin.js"></script>
+</body>
+</html>

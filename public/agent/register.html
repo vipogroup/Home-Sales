@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+  <title>הרשמת סוכן</title>
+  <!-- Dynamic theme (from server) -->
+  <link rel="stylesheet" href="/assets/theme.css">
+  <!-- Static theme (fallback) -->
+  <link rel="stylesheet" href="/assets/css/theme.css">
+  <!-- Base styles -->
+  <link rel="stylesheet" href="/assets/css/style-base.css">
+  <!-- Agent-specific styles -->
+  <link rel="stylesheet" href="/assets/css/style-agent.css">
+  <style>
+    body { text-align: right; }
+    .card { max-width: 520px; margin: 40px auto; }
+    .subtitle { margin-bottom: 1rem; }
+  </style>
+</head>
+<body class="admin-login-body">
+  <div class="card">
+    <h1 class="title">הרשמת סוכן חדש</h1>
+    <p class="subtitle">מלא פרטים וניצור עבורך קוד רפרל אישי</p>
+    <form id="agentRegisterForm">
+      <div class="field">
+        <label>שם מלא</label>
+        <input id="rg_fullname" autocomplete="name" required />
+      </div>
+      <div class="field">
+        <label>אימייל</label>
+        <input id="rg_email" type="email" autocomplete="email" required />
+      </div>
+      <div class="field">
+        <label>טלפון</label>
+        <input id="rg_phone" type="tel" autocomplete="tel" required />
+      </div>
+      <button type="submit" class="btn-primary w-100" style="padding:0.8rem 1rem; border:none; border-radius:10px;">הירשם</button>
+      <div id="rg_err" class="err"></div>
+      <div class="mt-12">
+        כבר רשום? <a href="/agent/login">התחבר כאן</a>
+      </div>
+    </form>
+  </div>
+  <script type="module" src="/assets/js/design.js"></script>
+  <script type="module" src="/assets/js/agent-register.js"></script>
+</body>
+</html>

@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agent Dashboard</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/assets/css/theme.css"/>
+  <link rel="stylesheet" href="/assets/css/style-base.css"/>
+  <link rel="stylesheet" href="/assets/css/style-agent.css"/>
+</head>
+<body>
+  <div class="container">
+    <div class="flex items-center justify-between gap-12">
+      <h1 class="m-0">דשבורד סוכן</h1>
+      <div class="flex items-center gap-8">
+        <span id="agentName" class="muted"></span>
+        <button id="agentLogoutBtn" class="btn btn-outline-danger"><i class="fas fa-sign-out-alt"></i> יציאה</button>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-8 wrap mt-12">
+      <button id="btnRefresh" class="btn btn-outline"><i class="fas fa-sync"></i> רענן</button>
+      <button id="btnShareWA" class="btn btn-outline-primary"><i class="fab fa-whatsapp"></i> שיתוף WhatsApp</button>
+      <button id="btnShareEmail" class="btn btn-outline-primary"><i class="fas fa-envelope"></i> שלח מייל</button>
+    </div>
+
+    <div class="card mt-12">
+      <h3 class="mt-0">סיכום</h3>
+      <div class="grid-4 gap-12">
+        <div>
+          <div class="muted">ביקורים</div>
+          <div id="sm_visits" class="fw-600">0</div>
+        </div>
+        <div>
+          <div class="muted">הזמנות</div>
+          <div id="sm_orders" class="fw-600">0</div>
+        </div>
+        <div>
+          <div class="muted">סה"כ מכירות</div>
+          <div id="sm_amount" class="fw-600">₪0</div>
+        </div>
+        <div>
+          <div class="muted">סה"כ עמלות</div>
+          <div id="sm_commissions" class="fw-600">₪0</div>
+        </div>
+      </div>
+      <div class="flex items-center gap-8 mt-12 wrap">
+        <div class="muted">קוד רפרל: <span id="sm_refcode">—</span></div>
+        <button id="btnCopyRefHome" class="btn btn-outline"><i class="fas fa-copy"></i> העתק לינק לחנות</button>
+        <a id="btnExportCsv" href="/api/agent/me/sales.csv" class="btn btn-outline-primary"><i class="fas fa-file-csv"></i> יצוא מכירות CSV</a>
+      </div>
+    </div>
+
+    <div class="card mt-16">
+      <h3 class="mt-0">מחולל קישורי UTM</h3>
+      <div class="mb-12">
+        <label>יעד הקישור</label>
+        <select id="utm_target" class="input">
+          <option value="shop">חנות מלאה (ברירת מחדל)</option>
+        </select>
+        <div class="text-sm muted">ניתן לבחור מוצר ספציפי לאחר טעינת רשימת המוצרים.</div>
+      </div>
+      <form id="utmForm" class="grid-3 gap-8">
+        <div>
+          <label>מקור התנועה (utm_source)</label>
+          <input id="utm_source" class="input" placeholder="facebook / instagram / tiktok" />
+        </div>
+        <div>
+          <label>סוג פרסום (utm_medium)</label>
+          <input id="utm_medium" class="input" placeholder="post / story / ads" />
+        </div>
+        <div>
+          <label>שם הקמפיין (utm_campaign)</label>
+          <input id="utm_campaign" class="input" placeholder="winter_sale" />
+        </div>
+        <button type="submit" class="btn btn-primary col-span-3">צור קישור UTM</button>
+      </form>
+      <div id="utmResult" class="mt-12">
+        <input id="utmLink" class="input w-100" readonly />
+        <div class="flex gap-8 mt-8 wrap">
+          <button id="btnCopyUTM" class="btn btn-outline"><i class="fas fa-copy"></i> העתק</button>
+          <button id="btnShareUTMWA" class="btn btn-outline-primary"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+          <button id="btnShareUTMEmail" class="btn btn-outline-primary"><i class="fas fa-envelope"></i> מייל</button>
+        </div>
+        <div class="muted mt-8 text-sm">איך זה עובד: הוספת פרמטרי UTM מאפשרת לזהות מקור התנועה והקמפיין באנליטיקות.</div>
+      </div>
+    </div>
+
+    <div class="card mt-16">
+      <h3 class="mt-0">מוצרים לקידום</h3>
+      <div id="agentProducts">טוען...</div>
+    </div>
+
+    <div class="card mt-16">
+      <h3 class="mt-0">הזמנות</h3>
+      <div id="agentOrders">טוען...</div>
+    </div>
+
+    <div class="card mt-16">
+      <h3 class="mt-0">מכירות ועמלות שלי</h3>
+      <div id="agentSales">טוען...</div>
+    </div>
+
+    <div class="card mt-16">
+      <h3 class="mt-0">אנליטיקות מקור תנועה</h3>
+      <div class="grid-2 gap-12">
+        <div>
+          <h4 class="muted mt-0 mb-6">ביקורים לפי מקור</h4>
+          <canvas id="chartVisitsBySource" height="140"></canvas>
+        </div>
+        <div>
+          <h4 class="muted mt-0 mb-6">מכירות לפי מקור</h4>
+          <canvas id="chartSalesBySource" height="140"></canvas>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="/assets/js/design.js"></script>
+  <script type="module" src="/assets/js/agent-dashboard.js"></script>
+</body>
+</html>

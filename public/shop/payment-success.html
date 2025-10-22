@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>תשלום הושלם בהצלחה - VIPO Group Buy</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/assets/theme.css"> <!-- Dynamic theme (from server) -->
+    <link rel="stylesheet" href="/assets/css/theme.css"> <!-- Static theme (fallback) -->
+    <link rel="stylesheet" href="/assets/css/style-base.css">
+    <link rel="stylesheet" href="/assets/css/style-shop.css">
+</head>
+<body class="success-body">
+    <div class="success-container">
+        <div class="success-icon"><i class="fas fa-check-circle"></i></div>
+        <h1 class="success-title">תשלום הושלם בהצלחה!</h1>
+        <p class="success-message">תודה רבה על הרכישה! ההזמנה שלך התקבלה ובעיבוד. קיבלת אישור במייל ו-SMS עם פרטי ההזמנה.</p>
+        <div class="order-details">
+            <div class="detail-row"><span class="detail-label">מזהה הזמנה:</span><span class="detail-value" id="orderId">-</span></div>
+            <div class="detail-row"><span class="detail-label">סטטוס:</span><span id="orderStatus" class="detail-value text-emerald fw-600">שולם בהצלחה ✅</span></div>
+            <div class="detail-row"><span class="detail-label">סכום חיוב:</span><span class="detail-value" id="orderTotal">-</span></div>
+            <div class="detail-row"><span class="detail-label">כמות:</span><span class="detail-value" id="orderQty">-</span></div>
+            <div class="detail-row"><span class="detail-label">זמן משוער למשלוח:</span><span class="detail-value">2-3 ימי עסקים</span></div>
+        </div>
+        <div class="action-buttons">
+          <a href="/shop" class="btn btn-primary"><i class="fas fa-home"></i> חזור לחנות</a>
+          <a href="/my-orders" id="linkMyOrders" class="btn btn-secondary" data-order-id=""><i class="fas fa-list"></i> ההזמנות שלי</a>
+          <button type="button" id="btnCopyOrderId" class="btn"><i class="fas fa-copy"></i> העתק מזהה</button>
+        </div>
+    </div>
+    <script type="module" src="/assets/js/design.js"></script>
+    <script type="module" src="/assets/js/payment-success.js"></script>
+</body>
+</html>

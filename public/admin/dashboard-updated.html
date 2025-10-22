@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Unified Admin Dashboard</title>
+  <link rel="stylesheet" href="/assets/css/theme.css"/>
+  <link rel="stylesheet" href="/assets/css/components.css"/>
+  <link rel="stylesheet" href="/assets/css/dashboard.css"/>
+  <link rel="stylesheet" href="/assets/css/style-base.css"/>
+</head>
+<body>
+  <div class="container">
+    <div class="flex items-center justify-between gap-12">
+      <h1>👨‍💼 <span data-i18n="ui.title">Unified Admin Dashboard (Phase 1)</span></h1>
+      <div class="flex items-center gap-8">
+        <label class="label" for="langSelect"><span data-i18n="ui.language">שפה</span></label>
+        <select id="langSelect" class="input min-w-180">
+          <option value="he">עברית</option>
+          <option value="en">English</option>
+        </select>
+      </div>
+      <button id="logoutBtn" class="btn btn-outline-danger"><span data-i18n="ui.logout">התנתקות</span></button>
+    </div>
+    <p id="health" data-i18n="ui.checkingServer">בודק שרת...</p>
+    <div class="flex items-center gap-8 wrap mt-8 mb-12">
+      <strong data-i18n="db.tools">כלי DB:</strong>
+      <button id="dbStatusBtn" class="btn btn-outline"><span data-i18n="db.check">בדיקת חיבור DB</span></button>
+      <button id="seedProductsBtn" class="btn btn-outline-primary"><span data-i18n="db.seedDemo">ייבוא מוצרי דמו ל-DB</span></button>
+      <small id="dbStatusText" class="muted"></small>
+    </div>
+
+    <div class="flex gap-8 wrap mt-16 mb-16">
+      <button id="tabAgents" class="btn"><span data-i18n="tabs.agents">סוכנים</span></button>
+      <button id="tabProducts" class="btn btn-primary"><span data-i18n="tabs.products">מוצרים</span></button>
+      <button id="tabOrders" class="btn"><span data-i18n="tabs.orders">הזמנות</span></button>
+      <button id="tabDesign" class="btn"><span data-i18n="tabs.design">עיצוב</span></button>
+    </div>
+
+    <!-- Design Section with Fixed Color System -->
+    <section id="designSection" class="hidden">
+      <h2 data-i18n="design.title">עיצוב</h2>
+      
+      <!-- Success Message -->
+      <div id="designSaveMsg" style="color: #16a34a; font-weight: bold; margin-bottom: 1rem;"></div>
+      
+      <div id="designPresetsSection" class="preset-section">
+        <h3 class="preset-title">
+          <i class="fas fa-palette"></i>
+          <span data-i18n="design.presetsTitle">ערכות צבעים מוכנות מאתרי מכירות מובילים</span>
+        </h3>
+        <div class="preset-subtitle" data-i18n="design.presetsIntro">בחר ערכת צבעים מוכחת מאתרי מכירות בינלאומיים מובילים - לחץ על כל אחת לתצוגה מקדימה</div>
+        
+        <div class="preset-grid">
+          <div class="preset-card" data-preset="amazon" style="cursor: pointer; border: 2px solid #ddd; border-radius: 8px; padding: 1rem; margin: 0.5rem;">
+            <div class="preset-header">
+              <span class="preset-name">Amazon Style</span>
+              <span class="preset-badge">🟠</span>
+            </div>
+            <div class="preset-colors">
+              <div class="color-dot" style="background: #ff9900; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px;"></div>
+              <div class="color-dot" style="background: #232f3e; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px;"></div>
+              <div class="color-dot" style="background: #37475a; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px;"></div>
+              <div class="color-dot" style="background: #ffffff; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px; border: 1px solid #ccc;"></div>
+            </div>
+            <div class="preset-desc">מקצועי - כתום וכחול כהה</div>
+          </div>
+
+          <div class="preset-card" data-preset="shopify" style="cursor: pointer; border: 2px solid #ddd; border-radius: 8px; padding: 1rem; margin: 0.5rem;">
+            <div class="preset-header">
+              <span class="preset-name">Shopify Style</span>
+              <span class="preset-badge">🟢</span>
+            </div>
+            <div class="preset-colors">
+              <div class="color-dot" style="background: #7ab55c; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px;"></div>
+              <div class="color-dot" style="background: #004c3f; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px;"></div>
+              <div class="color-dot" style="background: #bf0711; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px;"></div>
+              <div class="color-dot" style="background: #ffffff; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px; border: 1px solid #ccc;"></div>
+            </div>
+            <div class="preset-desc">ירוק - טבעי ומקצועי</div>
+          </div>
+
+          <div class="preset-card" data-preset="ebay" style="cursor: pointer; border: 2px solid #ddd; border-radius: 8px; padding: 1rem; margin: 0.5rem;">
+            <div class="preset-header">
+              <span class="preset-name">eBay Style</span>
+              <span class="preset-badge">🔵</span>
+            </div>
+            <div class="preset-colors">
+              <div class="color-dot" style="background: #0064d2; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px;"></div>
+              <div class="color-dot" style="background: #e53238; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px;"></div>
+              <div class="color-dot" style="background: #f7c41f; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px;"></div>
+              <div class="color-dot" style="background: #86b817; width: 20px; height: 20px; border-radius: 50%; display: inline-block; margin: 2px;"></div>
+            </div>
+            <div class="preset-desc">דינמי - צבעים עזים</div>
+          </div>
+        </div>
+        
+        <div class="preset-note">
+          <i class="fas fa-info-circle"></i>
+          <span>לחיצה על כל ערכת צבעים תחליף אוטומטית את כל הצבעים בטופס ותשמור אותם</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Other sections remain the same... -->
+    <section id="agentsSection" class="hidden">
+      <h2>סוכנים</h2>
+      <div id="agentsContainer">בשלב זה הטאב בבנייה. בקרוב יוצגו רשימות סוכנים ופעולות ניהול.</div>
+    </section>
+
+    <section id="productsSection">
+      <h2>מוצרים</h2>
+      <div id="productsContainer" class="mb-16">טוען מוצרים...</div>
+    </section>
+
+    <section id="ordersSection" class="hidden">
+      <h2>הזמנות</h2>
+      <div id="ordersContainer">טוען הזמנות...</div>
+    </section>
+  </div>
+
+  <!-- Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script type="module" src="/assets/js/app.js"></script>
+  <script type="module" src="/assets/js/admin.js"></script>
+  <script type="module" src="/assets/js/design-fix.js"></script>
+</body>
+</html>

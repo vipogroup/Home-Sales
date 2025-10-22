@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  
+  <!-- Mobile Optimization Meta Tags -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="VIPO Shop">
+  <meta name="theme-color" content="#667eea">
+  <meta name="msapplication-navbutton-color" content="#667eea">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  
+  <!-- Performance and Caching -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="format-detection" content="telephone=no">
+  <meta name="format-detection" content="address=no">
+  
+  <!-- Touch Icons for Mobile -->
+  <link rel="icon" href="/favicon.ico" type="image/x-icon">
+  <link rel="manifest" href="/manifest.json">
+  
+  <title>VIPO - רכישה קבוצתית</title>
+    
+    <!-- External Resources with SRI hashes -->
+    <link rel="stylesheet" 
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" 
+          integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg==" 
+          crossorigin="anonymous" 
+          referrerpolicy="no-referrer" />
+          
+    <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" 
+          rel="stylesheet">
+    
+    <!-- Theme and Styles -->
+    <link rel="stylesheet" href="/assets/theme.css"> <!-- Dynamic theme (from server) -->
+    <link rel="stylesheet" href="/assets/css/theme.css"> <!-- Static theme (fallback) -->
+    <link rel="stylesheet" href="/assets/css/style-base.css">
+    <link rel="stylesheet" href="/assets/css/style-shop.css">
+    
+    <!-- RTL and Mobile Fixes -->
+    <style>
+        /* RTL overrides */
+        body { text-align: right; direction: rtl; }
+        input, textarea, select { text-align: right; }
+        
+        /* Mobile fixes */
+        html, body { overflow-x: hidden; max-width: 100%; }
+        .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 15px; box-sizing: border-box; }
+        
+        /* Prevent horizontal scroll on mobile */
+        @media (max-width: 360px) {
+            body { font-size: 14px; }
+            .header h1 { font-size: 1.5rem; }
+            .product-card { width: 100%; margin: 10px 0; }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="flex items-center justify-between gap-12">
+                <h1 class="m-0"><i class="fas fa-shopping-cart"></i> VIPO - רכישה קבוצתית</h1>
+                <a href="/agent/register" class="btn btn-outline-primary"><i class="fas fa-user-plus"></i> הצטרף כסוכן</a>
+            </div>
+        </div>
+    </header>
+
+    <main class="main-content">
+        <div class="container">
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner fa-spin"></i> טוען מוצרים...
+            </div>
+            <div id="error" class="error hidden">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3>שגיאה בטעינת המוצרים</h3>
+                <p>אנא בדוק את החיבור לשרת ונסה שוב</p>
+                <button id="btnRetryLoad" class="join-btn">נסה שוב</button>
+            </div>
+            <section class="products-grid" id="productsGrid" data-scroll-direction="1"></section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 VIPO Group Buy. כל הזכויות שמורות.</p>
+            <p class="footer-sub">
+                <i class="fas fa-server"></i> שרת פנימי - גירסה 1.0
+            </p>
+        </div>
+    </footer>
+
+    <script type="module" src="/assets/js/app.js"></script>
+    <script type="module" src="/assets/js/design.js"></script>
+    <script type="module" src="/assets/js/shop-index.js"></script>
+    <script type="module" src="/assets/js/mobile-gestures.js"></script>
+
+    <div id="joinModal" class="modal-overlay">
+        <div class="modal-content max-w-500">
+            <h3 class="mb-12 text-center">הצטרפות לרכישה קבוצתית</h3>
+            <form id="joinForm">
+                <input type="hidden" id="productId">
+                <div class="mb-16">
+                    <label>שם מלא:</label>
+                    <input type="text" id="userName" required class="input w-100 mt-8">
+                </div>
+                <div class="mb-16">
+                    <label>אימייל:</label>
+                    <input type="email" id="userEmail" required class="input w-100 mt-8">
+                </div>
+                <div class="mb-16">
+                    <label>טלפון:</label>
+                    <input type="tel" id="userPhone" required class="input w-100 mt-8">
+                </div>
+                <div class="flex gap-12 justify-center">
+                    <button type="submit" class="join-btn">הצטרף עכשיו</button>
+                    <button type="button" id="btnCloseJoin" class="btn">ביטול</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    
+  </body>
+  </html>

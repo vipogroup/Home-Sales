@@ -1,0 +1,24 @@
+--- Original admin.js
++++ Fixed admin.js
+@@ -420,9 +420,15 @@
+ }
+ 
+ function bindPresets(){
+-  document.querySelectorAll('.preset-btn').forEach(btn=>{
++  // FIXED: Changed from .preset-btn to .preset-card
++  document.querySelectorAll('.preset-card').forEach(btn=>{
+     btn.addEventListener('click', async ()=>{
+       const key = btn.getAttribute('data-preset');
+       const preset = designPresets[key];
+       if (!preset) return;
+       fillDesignForm(preset);
+-      try { await api.post('/design', preset); qs('designSaveMsg').textContent = 'נשמרה ערכה: '+ key; setTimeout(()=>qs('designSaveMsg').textContent='', 2000); }
++      try { 
++        await api.post('/design', preset); 
++        qs('designSaveMsg').textContent = 'נשמרה ערכה: '+ key + ' - הדף יתרענן בעוד שנייה...'; 
++        setTimeout(()=> { qs('designSaveMsg').textContent=''; window.location.reload(); }, 2000); 
++      }
+       catch(e){ qs('designSaveMsg').textContent = 'שגיאה בשמירת ערכה: '+e.message; }
+     });
+   });
+ }
