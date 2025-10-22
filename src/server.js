@@ -5,6 +5,8 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import os from 'os';
 import fs from 'fs';
+import bodyParser from 'body-parser';
+import twilio from 'twilio';
 
 import { applySecurityMiddleware } from './middleware/security.js';
 import { initPostgres, getPool } from './db/postgres.js';
@@ -17,6 +19,8 @@ import adminRoutes from './routes/admin.js';
 import paymentsRoutes from './routes/payments.js';
 
 const app = express();
+app.set('trust proxy', 1);
+app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
 app.use(cookieParser());
 
@@ -24,6 +28,11 @@ applySecurityMiddleware(app);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
+const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
+const { MessagingResponse } = twilio.twiml;
+const twilioWebhook = twilio.webhook({ validate: true });
 
 // Shared CSP policy for admin/agent pages
 const adminCsp = helmet.contentSecurityPolicy({
@@ -283,6 +292,24 @@ app.get('/admin/dashboard', adminCsp, (req, res) => {
 });
 
 // Health
+app.get('/health', (req, res) => {
+  res.status(200).send('OK');
+});
+
+app.post('/twilio/incoming', twilioWebhook, (req, res) => {
+  const from = req.body.From || '';
+  const body = (req.body.Body || '').trim();
+  try { console.log('Incoming:', { from, body }); } catch {}
+  const twiml = new MessagingResponse();
+  twiml.message(`קיבלתי: ${body}`);
+  res.type('text/xml').status(200).send(twiml.toString());
+});
+
+app.post('/twilio/status', (req, res) => {
+  try { console.log('Status:', req.body?.MessageSid, req.body?.MessageStatus); } catch {}
+  res.sendStatus(204);
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ status: 'ok', ts: new Date().toISOString() });
 });
@@ -350,7 +377,7 @@ function startWithFallback(ports) {
   });
 }
 
-const port = Number(process.env.PORT) || 8080;
+const port = Number(process.env.PORT) || 10000;
 const server = app.listen(port, '0.0.0.0', async () => {
   const localIp = getLocalIpAddress();
   console.log(`VIPO unified server listening on http://localhost:${port}`);
