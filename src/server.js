@@ -11,6 +11,8 @@ import twilio from 'twilio';
 import { applySecurityMiddleware } from './middleware/security.js';
 import { initPostgres, getPool } from './db/postgres.js';
 import helmet from 'helmet';
+import { connectMongo, getMongoStatus } from './db/mongo.js';
+import Message from './models/Message.js';
 
 import authRoutes from './routes/auth.js';
 import agentsRoutes from './routes/agents.js';
@@ -26,13 +28,14 @@ app.use(cookieParser());
 
 applySecurityMiddleware(app);
 
+// Initialize Mongo connection (non-fatal on failure)
+connectMongo().catch(() => {});
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN } = process.env;
-const twilioClient = twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
-const { MessagingResponse } = twilio.twiml;
-const twilioWebhook = twilio.webhook({ validate: true });
+const shouldValidateTwilio = String(process.env.TWILIO_VALIDATE || 'true').toLowerCase() !== 'false';
+const twilioWebhook = twilio.webhook({ validate: shouldValidateTwilio });
 
 // Shared CSP policy for admin/agent pages
 const adminCsp = helmet.contentSecurityPolicy({
@@ -293,16 +296,37 @@ app.get('/admin/dashboard', adminCsp, (req, res) => {
 
 // Health
 app.get('/health', (req, res) => {
-  res.status(200).send('OK');
+  const mongo = getMongoStatus();
+  res.status(200).json({
+    status: 'ok',
+    ts: new Date().toISOString(),
+    database: {
+      primary: { type: 'MongoDB', connected: !!mongo.connected, error: mongo.error || null }
+    }
+  });
 });
 
 app.post('/twilio/incoming', twilioWebhook, (req, res) => {
-  const from = req.body.From || '';
-  const body = (req.body.Body || '').trim();
-  try { console.log('Incoming:', { from, body }); } catch {}
-  const twiml = new MessagingResponse();
-  twiml.message(`קיבלתי: ${body}`);
-  res.type('text/xml').status(200).send(twiml.toString());
+  const waId = req.body.WaId;
+  const from = req.body.From || waId;
+  const body = req.body.Body || '';
+  console.log('[TWILIO] incoming =>', { from, body });
+
+  // Respond fast
+  res.status(200).type('text/plain').send('OK');
+
+  // Persist if DB is connected (non-blocking)
+  const mongo = getMongoStatus();
+  if (mongo.connected) {
+    const doc = { waId, from, body, raw: req.body };
+    Promise.resolve(Message.create(doc))
+      .then((saved) => {
+        try { console.log(`[TWILIO] saved message ${saved._id}`); } catch {}
+      })
+      .catch((err) => {
+        try { console.error('[TWILIO] save error:', err?.message || err); } catch {}
+      });
+  }
 });
 
 app.post('/twilio/status', (req, res) => {

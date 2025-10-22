@@ -133,3 +133,20 @@ MIT License
 ---
 
 **VIPO Group** © 2024
+
+## 🧩 הגדרות סביבה (MongoDB + Twilio)
+
+- `MONGODB_URI` – כתובת חיבור ל-Atlas (לדוגמה: `mongodb+srv://USER:PASS@CLUSTER/mydb?retryWrites=true&w=majority`)
+- `TWILIO_VALIDATE` – ברירת מחדל `true`. ניתן להגדיר ל-`false` זמנית אם יש בעיות חתימה בהגדרות ה-Webhook
+
+ב-Render: היכנסו ל-Service Settings → Environment → הוספת `MONGODB_URI` (אל תכניסו סודות לקוד).
+
+### בדיקת Webhook מהירה
+
+```bash
+curl -X POST https://<YOUR_SERVICE>.onrender.com/twilio/incoming \
+  -H "Content-Type: application/x-www-form-urlencoded" \
+  --data "From=whatsapp:+972587009938&WaId=972587009938&Body=test"
+```
+
+צפי: 200 OK. אם החיבור ל-DB פעיל – יישמר מסמך חדש באוסף `messages`.
