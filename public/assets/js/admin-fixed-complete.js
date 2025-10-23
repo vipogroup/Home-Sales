@@ -1,4 +1,4 @@
-import { api } from '/assets/js/api.js';
+import { api } from './api.js';
 
 function qs(id){ return document.getElementById(id); }
 

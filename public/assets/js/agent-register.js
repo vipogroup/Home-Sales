@@ -1,4 +1,4 @@
-import { api } from '/assets/js/api.js';
+import { api } from './api.js';
 
 function qs(id){ return document.getElementById(id); }
 
@@ -13,7 +13,7 @@ async function onSubmit(e){
     const res = await api.post('/agent/register', { full_name, email, phone });
     if (!res?.success) throw new Error(res?.error||'Registration failed');
     // redirect to dashboard where the agent can copy links per product
-    window.location.href = '/agent/dashboard';
+    window.location.href = 'dashboard.html';
   } catch(e){ err.textContent = e.message || 'שגיאה בהרשמה'; }
 }
 

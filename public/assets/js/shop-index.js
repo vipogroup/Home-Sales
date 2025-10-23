@@ -1,5 +1,5 @@
-import { loadDesignSettings } from '/assets/js/design.js';
-import { api } from '/assets/js/api.js';
+import { loadDesignSettings } from './design.js';
+import { api } from './api.js';
 
 const API_BASE = window.location.origin;
 
@@ -54,7 +54,11 @@ async function loadProducts() {
   }
 }
 
-function openDetails(id){ window.location.href = `/product/${id}`; }
+function openDetails(id){
+  // Support static GitHub Pages (no server rewrite): use product.html?id=ID
+  const base = window.location.pathname.replace(/\/[^/]*$/, '/');
+  window.location.href = `${base}product.html?id=${encodeURIComponent(id)}`;
+}
 function openJoin(id){ document.getElementById('productId').value = id; openModal(); }
 function openModal(){ const m=document.getElementById('joinModal'); if (m) m.classList.add('show'); }
 function closeModal(){ const m=document.getElementById('joinModal'); if (m) m.classList.remove('show'); }

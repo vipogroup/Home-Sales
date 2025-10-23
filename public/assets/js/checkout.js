@@ -1,7 +1,7 @@
-import { loadDesignSettings } from '/assets/js/design.js';
-import { api } from '/assets/js/api.js';
+import { loadDesignSettings } from './design.js';
+import { api } from './api.js';
 
-function goBack(){ window.location.href = '/shop'; }
+function goBack(){ window.location.href = 'index.html'; }
 let currentProduct = null;
 let currentQty = 1;
 let selectedMethod = 'online';
@@ -36,7 +36,7 @@ async function simulatePay(){
       if (!data?.success) throw new Error(data?.error || 'Order failed');
       const orderId = data.order?.id || `ORD-${Math.floor(Math.random()*1e6)}`;
       try { localStorage.setItem('lastOrderId', orderId); } catch {}
-      window.location.href = `/shop/payment-success.html?order_id=${orderId}&status=paid`;
+      window.location.href = `payment-success.html?order_id=${orderId}&status=paid`;
       return;
     }
     // Online or installments -> create payment session

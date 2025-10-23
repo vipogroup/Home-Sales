@@ -1,5 +1,5 @@
-import { loadDesignSettings } from '/assets/js/design.js';
-import { api } from '/assets/js/api.js';
+import { loadDesignSettings } from './design.js';
+import { api } from './api.js';
 
 function statusLabel(st){
   const s = String(st||'').toLowerCase();

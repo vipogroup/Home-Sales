@@ -1,5 +1,5 @@
-import { loadDesignSettings } from '/assets/js/design.js';
-import { api } from '/assets/js/api.js';
+import { loadDesignSettings } from './design.js';
+import { api } from './api.js';
 
 document.addEventListener('DOMContentLoaded', ()=>{
   if (window.loadDesignSettings) window.loadDesignSettings();
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     try {
       const j = await api.post('/agent/login', { referralCode });
       if (!j?.success) throw new Error(j?.error||'שגיאה בהתחברות');
-      window.location.href = '/agent/dashboard';
+      window.location.href = 'dashboard.html';
     } catch (e) {
       err.textContent = e.message || 'שגיאה בהתחברות';
     }

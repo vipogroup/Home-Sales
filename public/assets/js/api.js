@@ -1,6 +1,17 @@
 export const api = {
   async request(method, path, body) {
-    const url = `/api${path.startsWith('/') ? path : '/' + path}`;
+    // Allow overriding API base for static hosting (e.g., GitHub Pages)
+    // Priority: window.API_BASE -> <meta name="api-base" content> -> localStorage.API_BASE -> '/api'
+    let base = '/api';
+    try {
+      if (typeof window !== 'undefined' && window.API_BASE) base = String(window.API_BASE);
+      else {
+        const meta = typeof document !== 'undefined' ? document.querySelector('meta[name="api-base"]') : null;
+        if (meta && meta.content) base = meta.content;
+        else if (typeof localStorage !== 'undefined') base = localStorage.getItem('API_BASE') || base;
+      }
+    } catch {}
+    const url = `${base.replace(/\/$/, '')}${path.startsWith('/') ? path : '/' + path}`;
     const res = await fetch(url, {
       method,
       headers: { 'Content-Type': 'application/json' },

@@ -1,5 +1,5 @@
 // Design settings loader and applier
-import { api } from '/assets/js/api.js';
+import { api } from './api.js';
 export const defaultDesign = {
   joinBtnColor: '#667eea',
   headerBgColor: '#ffffff',
@@ -26,7 +26,7 @@ export function applyDesignToPage(design){
     // If theme stylesheet is present, variables are provided externally (CSP-safe)
     const hasThemeCss = typeof document !== 'undefined' && (
       document.querySelector('link[href*="/assets/theme.css"]') ||
-      document.querySelector('link[href*="/assets/css/theme.css"]') ||
+      document.querySelector('link[href*="assets/css/theme.css"]') ||
       document.querySelector('link[href$="theme.css"]')
     );
     if (hasThemeCss) return;

@@ -1,5 +1,5 @@
-import { loadDesignSettings } from '/assets/js/design.js';
-import { api } from '/assets/js/api.js';
+import { loadDesignSettings } from './design.js';
+import { api } from './api.js';
 
 function getUrlParams(){ const params=new URLSearchParams(window.location.search); return { orderId: params.get('order_id'), status: params.get('status') }; }
 function applyStatus(status){ const el=document.getElementById('orderStatus'); if(!el) return; const st=String(status||'').toLowerCase(); el.classList.remove('text-emerald','text-danger','muted'); let label='בוטל ❌'; if(st==='paid'){ label='שולם ✅'; el.classList.add('text-emerald'); } else if(st==='canceled'){ el.classList.add('text-danger'); } else { label='בטיפול ⏳'; el.classList.add('muted'); } el.textContent=label; }
@@ -12,11 +12,8 @@ document.addEventListener('DOMContentLoaded', ()=>{
   if (tryAgain) {
     tryAgain.addEventListener('click', (e)=>{
       e.preventDefault();
-      if (window.history.length > 1) {
-        window.history.back();
-      } else {
-        window.location.href = '/shop';
-      }
+      if (window.history.length > 1) { window.history.back(); }
+      else { window.location.href = 'index.html'; }
     });
   }
 });

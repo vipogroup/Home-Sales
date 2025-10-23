@@ -1,6 +1,22 @@
-import { api } from '/assets/js/api.js';
+import { api } from './api.js';
 
 function qs(id){ return document.getElementById(id); }
+
+// Compute API base for static hosting (GitHub Pages) to use external backend
+function computeApiBase(){
+  let base = '/api';
+  try {
+    if (typeof window !== 'undefined' && window.API_BASE) base = String(window.API_BASE);
+    else {
+      const meta = typeof document !== 'undefined' ? document.querySelector('meta[name="api-base"]') : null;
+      if (meta && meta.content) base = meta.content;
+      else if (typeof localStorage !== 'undefined') {
+        try { const ls = localStorage.getItem('API_BASE'); if (ls) base = ls; } catch {}
+      }
+    }
+  } catch {}
+  return base.replace(/\/$/, '');
+}
 
 // Preview utilities
 function setPrimaryPreviewPage(url){
@@ -19,7 +35,7 @@ function setPreviewDevice(size){
 
 function loadPreviewFrame(frame){
   if (!frame) return;
-  const base = frame.getAttribute('data-src') || frame.dataset.src || '/shop';
+  const base = frame.getAttribute('data-src') || frame.dataset.src || '../shop/index.html';
   const url = base + (base.includes('?') ? '&' : '?') + '_t=' + Date.now();
   // inject vars after load
   try {
@@ -55,7 +71,7 @@ function initPreviews(){
 
   document.querySelectorAll('.preview-card.preview-thumb').forEach(card=>{
     card.addEventListener('click', ()=>{
-      const src = card.getAttribute('data-src') || card.querySelector('.preview-frame')?.getAttribute('data-src') || '/shop';
+      const src = card.getAttribute('data-src') || card.querySelector('.preview-frame')?.getAttribute('data-src') || '../shop/index.html';
       const sel = document.getElementById('previewPageSelect');
       if (sel) sel.value = src;
       setPrimaryPreviewPage(src);
@@ -149,6 +165,25 @@ const PAGE_CATEGORIES = {
     'כרטיסים': ['cardRadius']
   }
 };
+
+// Normalize preview page values (relative HTML) to canonical keys used above
+function normalizePreviewKey(page){
+  try {
+    const s = String(page||'');
+    if (/product\.html/i.test(s)){
+      const u = new URL(s, location.href);
+      const id = u.searchParams.get('id') || '1';
+      return `/product/${id}`;
+    }
+    if (/index\.html$/i.test(s) || /\/shop\/?$/i.test(s)) return '/shop';
+    if (/checkout\.html/i.test(s)) return '/shop/checkout';
+    if (/payment-success\.html/i.test(s)) return '/shop/payment-success';
+    if (/payment-cancel\.html/i.test(s)) return '/shop/payment-cancel';
+    if (/my-orders\.html/i.test(s)) return '/my-orders';
+    if (/^\/(shop|product)\b/.test(s)) return s;
+    return s;
+  } catch { return String(page||''); }
+}
 
 function currentLang(){ try { return localStorage.getItem('admin_lang')||'he'; } catch { return 'he'; } }
 function labelForKey(key){
@@ -285,7 +320,8 @@ function initPoTabs(container){
 function renderPreviewOptions(page){
   const list = document.getElementById('previewOptionsList');
   if (!list) return;
-  const categories = PAGE_CATEGORIES[page];
+  const key = normalizePreviewKey(page);
+  const categories = PAGE_CATEGORIES[key];
   if (categories){
     const names = Object.keys(categories);
     const header = `<div class="po-tabs-header">${names.map((n,i)=>`<button class="po-tab ${i===0?'active':''}" data-tab="po-tab-${i}">${n}</button>`).join('')}</div>`;
@@ -299,7 +335,7 @@ function renderPreviewOptions(page){
     return;
   }
   // fallback: flat list
-  const keys = PAGE_OPTIONS[page] || [];
+  const keys = PAGE_OPTIONS[key] || [];
   const html = keys.map(key=> buildOptionRow(key)).join('');
   list.innerHTML = html || '<div class="muted">אין אופציות ספציפיות לעמוד זה</div>';
   bindOptionsEvents(list);
@@ -626,7 +662,7 @@ async function loadOrders(){
       <tbody>${rows}</tbody>
     </table>`;
     const exportBtn = qs('exportOrdersBtn');
-    if (exportBtn) exportBtn.onclick = ()=>window.open('/api/orders.csv'+buildOrdersQuery(),'_blank');
+    if (exportBtn) exportBtn.onclick = ()=>window.open(computeApiBase()+'/orders.csv'+buildOrdersQuery(),'_blank');
     box.querySelectorAll('.btn-del-order').forEach(btn=> btn.addEventListener('click', onDeleteOrder));
     box.querySelectorAll('.btn-mark-paid').forEach(btn=> btn.addEventListener('click', async (e)=>{ const id=e.currentTarget.getAttribute('data-id'); try{ await api.post('/payments/dev/mark',{ orderId:id, status:'paid' }); await loadOrders(); }catch(err){ alert('שגיאה בעדכון סטטוס: '+err.message); } }));
     box.querySelectorAll('.btn-mark-canceled').forEach(btn=> btn.addEventListener('click', async (e)=>{ const id=e.currentTarget.getAttribute('data-id'); try{ await api.post('/payments/dev/mark',{ orderId:id, status:'canceled' }); await loadOrders(); }catch(err){ alert('שגיאה בעדכון סטטוס: '+err.message); } }));
@@ -656,7 +692,7 @@ async function prepareOrdersFilters(){
   if (btnFilter) btnFilter.onclick = async ()=> { await loadOrders(); await loadOrdersSummary(); await loadSales(); };
   if (btnClear) btnClear.onclick = async ()=>{ if (qs('ordersFrom')) qs('ordersFrom').value=''; if (qs('ordersTo')) qs('ordersTo').value=''; if (qs('ordersProduct')) qs('ordersProduct').value=''; if (qs('ordersAgent')) qs('ordersAgent').value=''; await loadOrders(); await loadOrdersSummary(); await loadSales(); };
   const exportSales = qs('exportSalesBtn');
-  if (exportSales) exportSales.onclick = ()=> window.open('/api/sales.csv'+buildOrdersQuery(),'_blank');
+  if (exportSales) exportSales.onclick = ()=> window.open(computeApiBase()+'/sales.csv'+buildOrdersQuery(),'_blank');
   // initial sales load using current filters
   await loadSales();
 }
@@ -740,7 +776,7 @@ async function ensureAdmin(){
     if (!res?.success && res?.error) throw new Error(res.error);
   } catch (e) {
     // If auth is enabled, server returns 401/403. Redirect to login.
-    window.location.href = '/admin/login';
+    window.location.href = 'login.html';
   }
 }
 
@@ -749,7 +785,7 @@ function bindLogout(){
   if (!btn) return;
   btn.addEventListener('click', async ()=>{
     try { await api.post('/admin/logout', {}); } catch {}
-    window.location.href = '/admin/login';
+    window.location.href = 'login.html';
   });
 }
 
@@ -813,7 +849,7 @@ function fillDesignForm(values){
 
 // פונקציה לטעינה מחדש של CSS הצבעים בלבד
 function reloadThemeCSS() {
-  const themeLinks = document.querySelectorAll('link[href*="/assets/theme.css"]');
+  const themeLinks = document.querySelectorAll('link[href*="assets/theme.css"], link[href*="assets/css/theme.css"], link[href$="theme.css"]');
   themeLinks.forEach(link => {
     const newLink = document.createElement('link');
     newLink.rel = 'stylesheet';
@@ -955,7 +991,7 @@ async function onViewParticipants(ev){
   hint.textContent = `מוצר: ${name}`;
   box.textContent = 'טוען משתתפים...';
   const exportBtn = qs('exportParticipantsBtn');
-  if (exportBtn) { exportBtn.disabled = false; exportBtn.onclick = ()=>{ window.open(`/api/products/${id}/participants.csv`, '_blank'); }; }
+  if (exportBtn) { exportBtn.disabled = false; exportBtn.onclick = ()=>{ window.open(`${computeApiBase()}/products/${id}/participants.csv`, '_blank'); }; }
   try {
     const res = await api.get(`/products/${id}/participants`);
     const list = res?.data || [];

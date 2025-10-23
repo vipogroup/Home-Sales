@@ -316,7 +316,7 @@ class ProductEnhancements {
     ];
 
     return products.map(p => `
-      <div class="related-product-card" onclick="window.location.href='/product/${p.id}'">
+      <div class="related-product-card" onclick="window.location.href='product.html?id=${p.id}'">
         <img src="${p.image}" alt="${p.name}" class="related-product-image">
         <div class="related-product-info">
           <div class="related-product-name">${p.name}</div>
@@ -334,9 +334,9 @@ class ProductEnhancements {
     const breadcrumbs = document.createElement('div');
     breadcrumbs.className = 'breadcrumbs';
     breadcrumbs.innerHTML = `
-      <a href="/shop/">דף הבית</a>
+      <a href="index.html">דף הבית</a>
       <span class="separator">›</span>
-      <a href="/shop/?category=electronics">מחשבים ולפטופים</a>
+      <a href="index.html?category=electronics">מחשבים ולפטופים</a>
       <span class="separator">›</span>
       <span>מוצר נוכחי</span>
     `;
@@ -684,7 +684,7 @@ class ProductEnhancements {
       <div class="related-product-card" style="background: white; border-radius: 15px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.08); transition: all 0.3s ease; cursor: pointer;" 
            onmouseover="this.style.transform='translateY(-8px)'; this.style.boxShadow='0 8px 25px rgba(0,0,0,0.15)'"
            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 15px rgba(0,0,0,0.08)'"
-           onclick="window.location.href='/shop/product/${p.id}'">
+           onclick="window.location.href='product.html?id=${p.id}'">
         <img src="${p.image}" alt="${p.name}" style="width: 100%; height: 200px; object-fit: cover;">
         <div style="padding: 1.2rem;">
           <div style="font-weight: 600; color: #2c3e50; margin-bottom: 0.5rem; font-size: 1rem;">${p.name}</div>

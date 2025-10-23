@@ -1,13 +1,17 @@
-import { loadDesignSettings } from '/assets/js/design.js';
-import { api } from '/assets/js/api.js';
+import { loadDesignSettings } from './design.js';
+import { api } from './api.js';
 
 const API_BASE = window.location.origin;
 let currentProduct = null;
 
 function getProductIdFromUrl() {
+  // Prefer query param ?id= for static hosting, fallback to /product/:id route
+  const params = new URLSearchParams(window.location.search);
+  const qid = params.get('id');
+  if (qid && /^\d+$/.test(qid)) return parseInt(qid, 10);
   const path = window.location.pathname;
   const m = path.match(/\/product\/(\d+)/);
-  return m ? parseInt(m[1]) : null;
+  return m ? parseInt(m[1], 10) : null;
 }
 
 async function loadProduct(){
@@ -111,7 +115,7 @@ function displayProduct(p){
           </div>`}
         <!-- Main Action Button -->  
         ${p.purchaseType === 'immediate' 
-          ? `<div class="buy-button-container"><a class="buy-now-button" href="/shop/checkout.html?product=${p.id}&qty=1">הוספה לסל</a></div>`
+          ? `<div class="buy-button-container"><a class="buy-now-button" href="checkout.html?product=${p.id}&qty=1">הוספה לסל</a></div>`
           : `<div class="buy-button-container"><button class="buy-now-button" id="btnOpenJoin">הצטרף עכשיו</button></div>`}
         
         <!-- Shipping & Returns Info -->

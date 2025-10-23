@@ -1,4 +1,4 @@
-import { api } from '/assets/js/api.js';
+import { api } from './api.js';
 // Capture referral code from URL and store in cookie (30 days)
 (function () {
   try {

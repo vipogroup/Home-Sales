@@ -1,9 +1,25 @@
-import { loadDesignSettings } from '/assets/js/design.js';
-import { api } from '/assets/js/api.js';
-import { formatNIS } from '/assets/js/utils.js';
+import { loadDesignSettings } from './design.js';
+import { api } from './api.js';
+import { formatNIS } from './utils.js';
 
 function fmtCurrency(v){ return formatNIS(v); }
 function el(id){ return document.getElementById(id); }
+
+// Compute API base for static hosting (GitHub Pages) to support CSV links
+function computeApiBase(){
+  let base = '/api';
+  try {
+    if (typeof window !== 'undefined' && window.API_BASE) base = String(window.API_BASE);
+    else {
+      const meta = typeof document !== 'undefined' ? document.querySelector('meta[name="api-base"]') : null;
+      if (meta && meta.content) base = meta.content;
+      else if (typeof localStorage !== 'undefined') {
+        try { const ls = localStorage.getItem('API_BASE'); if (ls) base = ls; } catch {}
+      }
+    }
+  } catch {}
+  return base.replace(/\/$/, '');
+}
 
 let gRefLink = '';
 let gRefCode = '';
@@ -17,7 +33,7 @@ async function ensureAgent(){
     const name = j.name || 'Agent';
     const nm = el('agentName'); if (nm) nm.textContent = name;
   } catch {
-    window.location.href = '/agent/login';
+    window.location.href = 'login.html';
   }
 }
 
@@ -34,7 +50,7 @@ async function loadSummary(){
     gRefCode = s.referralCode||'';
     const btnCopyRefHome = el('btnCopyRefHome');
     if (btnCopyRefHome) {
-      const link = `${location.protocol}//${location.host}/shop?ref=${encodeURIComponent(s.referralCode||'')}`;
+      const link = new URL(`../shop/index.html?ref=${encodeURIComponent(s.referralCode||'')}`, location.href).toString();
       gRefLink = link;
       btnCopyRefHome.addEventListener('click', async ()=>{
         try { await navigator.clipboard.writeText(link); btnCopyRefHome.textContent='הועתק!'; setTimeout(()=> btnCopyRefHome.innerHTML='<i class="fas fa-copy"></i> העתק לינק לחנות', 1200); } catch {}
@@ -139,18 +155,17 @@ function bindLogout(){
   if (!btn) return;
   btn.addEventListener('click', async ()=>{
     try { await api.post('/agent/logout', {}); } catch {}
-    window.location.href = '/agent/login';
+    window.location.href = 'login.html';
   });
 }
 
 function baseLinkForTarget(target){
-  const origin = `${location.protocol}//${location.host}`;
-  if (!target || target === 'shop') return `${origin}/shop`;
+  if (!target || target === 'shop') return new URL('../shop/index.html', location.href).toString();
   if (String(target).startsWith('product:')){
     const id = String(target).split(':')[1];
-    return `${origin}/product/${id}`;
+    return new URL(`../shop/product.html?id=${id}`, location.href).toString();
   }
-  return `${origin}/shop`;
+  return new URL('../shop/index.html', location.href).toString();
 }
 
 function buildUtmLink(refCode, source, medium, campaign, target='shop'){
@@ -230,4 +245,6 @@ document.addEventListener('DOMContentLoaded', async ()=>{
   await loadOrders();
   await loadSales();
   renderSourceChartsPlaceholder();
+  // Adjust export CSV link for static hosting
+  const exp = el('btnExportCsv'); if (exp) exp.href = computeApiBase() + '/agent/me/sales.csv';
 });

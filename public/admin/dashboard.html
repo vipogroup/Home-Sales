@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="api-base" content="https://agent-system-2.onrender.com/api">
   <title>Unified Admin Dashboard</title>
-  <link rel="stylesheet" href="/assets/css/theme.css"/>
-  <link rel="stylesheet" href="/assets/css/components.css"/>
-  <link rel="stylesheet" href="/assets/css/dashboard.css"/>
-  <link rel="stylesheet" href="/assets/css/style-base.css"/>
+  <link rel="stylesheet" href="../assets/css/theme.css"/>
+  <link rel="stylesheet" href="../assets/css/components.css"/>
+  <link rel="stylesheet" href="../assets/css/dashboard.css"/>
+  <link rel="stylesheet" href="../assets/css/style-base.css"/>
 </head>
 <body>
   <div class="container">
@@ -235,12 +236,12 @@
             <div class="flex items-center gap-6">
               <label class="label">בחר עמוד</label>
               <select id="previewPageSelect" class="input min-w-220">
-                <option value="/product/1">דף מוצר</option>
-                <option value="/shop">דף מוצרים</option>
-                <option value="/shop/checkout">דף תשלום</option>
-                <option value="/shop/payment-success">תשלום הצליח</option>
-                <option value="/shop/payment-cancel">תשלום בוטל</option>
-                <option value="/my-orders">הזמנות שלי</option>
+                <option value="../shop/product.html?id=1">דף מוצר</option>
+                <option value="../shop/index.html">דף מוצרים</option>
+                <option value="../shop/checkout.html">דף תשלום</option>
+                <option value="../shop/payment-success.html">תשלום הצליח</option>
+                <option value="../shop/payment-cancel.html">תשלום בוטל</option>
+                <option value="../shop/my-orders.html">הזמנות שלי</option>
               </select>
             </div>
             <div class="device-tabs flex gap-6">
@@ -267,7 +268,7 @@
             <div id="previewOptionsList" class="preview-options-list"></div>
           </div>
           <div class="preview-card">
-            <iframe id="primaryPreviewFrame" class="preview-frame frame-desktop" data-src="/product/1" title="Preview"></iframe>
+            <iframe id="primaryPreviewFrame" class="preview-frame frame-desktop" data-src="../shop/product.html?id=1" title="Preview"></iframe>
           </div>
         </div>
       </div>
@@ -615,7 +616,7 @@
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" src="/assets/js/app.js"></script>
-  <script type="module" src="/assets/js/admin.js"></script>
+  <script type="module" src="../assets/js/app.js"></script>
+  <script type="module" src="../assets/js/admin.js"></script>
 </body>
 </html>

@@ -1,9 +1,9 @@
-import { api } from '/assets/js/api.js';
+import { api } from './api.js';
 
 async function checkStatus(){
   try {
     const res = await api.get('/admin/status');
-    if (res?.success) window.location.href = '/admin/dashboard';
+    if (res?.success) window.location.href = 'dashboard.html';
   } catch {}
 }
 
@@ -16,7 +16,7 @@ async function onSubmit(e){
   try {
     const res = await api.post('/admin/login', { user, password });
     if (res?.success) {
-      window.location.href = '/admin/dashboard';
+      window.location.href = 'dashboard.html';
     } else {
       err.textContent = res?.error || 'שגיאה בהתחברות';
     }

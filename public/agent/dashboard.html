@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="api-base" content="https://agent-system-2.onrender.com/api">
   <title>Agent Dashboard</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;700;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/assets/css/theme.css"/>
-  <link rel="stylesheet" href="/assets/css/style-base.css"/>
-  <link rel="stylesheet" href="/assets/css/style-agent.css"/>
+  <link rel="stylesheet" href="../assets/css/theme.css"/>
+  <link rel="stylesheet" href="../assets/css/style-base.css"/>
+  <link rel="stylesheet" href="../assets/css/style-agent.css"/>
 </head>
 <body>
   <div class="container">
@@ -49,7 +50,7 @@
       <div class="flex items-center gap-8 mt-12 wrap">
         <div class="muted">קוד רפרל: <span id="sm_refcode">—</span></div>
         <button id="btnCopyRefHome" class="btn btn-outline"><i class="fas fa-copy"></i> העתק לינק לחנות</button>
-        <a id="btnExportCsv" href="/api/agent/me/sales.csv" class="btn btn-outline-primary"><i class="fas fa-file-csv"></i> יצוא מכירות CSV</a>
+        <a id="btnExportCsv" href="#" class="btn btn-outline-primary"><i class="fas fa-file-csv"></i> יצוא מכירות CSV</a>
       </div>
     </div>
 
@@ -119,7 +120,7 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-  <script type="module" src="/assets/js/design.js"></script>
-  <script type="module" src="/assets/js/agent-dashboard.js"></script>
+  <script type="module" src="../assets/js/design.js"></script>
+  <script type="module" src="../assets/js/agent-dashboard.js"></script>
 </body>
 </html>
