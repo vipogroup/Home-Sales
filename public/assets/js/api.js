@@ -12,11 +12,14 @@ export const api = {
       }
     } catch {}
     const url = `${base.replace(/\/$/, '')}${path.startsWith('/') ? path : '/' + path}`;
+    const headers = {};
+    // Important: avoid sending Content-Type on GET/HEAD/DELETE without body to prevent CORS preflight
+    if (body != null) headers['Content-Type'] = 'application/json';
     const res = await fetch(url, {
       method,
-      headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: body ? JSON.stringify(body) : undefined,
+      headers: Object.keys(headers).length ? headers : undefined,
+      body: body != null ? JSON.stringify(body) : undefined,
     });
     const text = await res.text();
     let json;
