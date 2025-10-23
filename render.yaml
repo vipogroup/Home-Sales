@@ -1,0 +1,31 @@
+services:
+  - type: web
+    name: agent-system-2
+    env: node
+    rootDir: Agent-System-2
+    branch: main
+    region: frankfurt
+    buildCommand: "npm ci && npm run build"
+    startCommand: "npm run start"
+    plan: standard
+    healthCheckPath: "/api/health"
+    autoDeploy: true
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: FRONTEND_ORIGIN
+        value: https://vipogroup.github.io
+      - key: SESSION_SECRET
+        generateValue: true
+      - key: ADMIN_EMAIL
+        value: admin@system.com
+      - key: ADMIN_PASSWORD
+        value: admin123
+      - key: PRODUCTS_DATA
+        value: /var/data/products.json
+      - key: DESIGN_DATA
+        value: /var/data/design.json
+    disks:
+      - name: data
+        mountPath: /var/data
+        sizeGB: 1
