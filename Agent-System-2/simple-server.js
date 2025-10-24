@@ -48,6 +48,10 @@ import {
 import logger from './logger.js';
 import { resolveDataPaths } from './utils/dataPaths.js';
 
+const app = express();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 const { productsPath, designPath } = resolveDataPaths();
 
 // JWT Secret
@@ -61,8 +65,11 @@ const corsOptions = {
       'https://agent-system-2.onrender.com',
       'http://localhost:3000',
       'http://localhost:8080',
+      'http://localhost:9000',
       'http://localhost:10000',
       'http://127.0.0.1:3000',
+      'http://127.0.0.1:8080',
+      'http://127.0.0.1:9000',
       'http://127.0.0.1:10000'
     ];
     
@@ -76,6 +83,82 @@ const corsOptions = {
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS']
   // Note: do not set allowedHeaders statically; cors will reflect Access-Control-Request-Headers
+};
+
+// 🔑 JWT Functions
+const createToken = (user) => {
+  return jwt.sign({
+    id: user.id,
+    email: user.email,
+    role: user.role || 'agent'
+  }, JWT_SECRET, {
+    expiresIn: '24h',
+    issuer: 'agent-system'
+  });
+};
+
+const setTokenCookie = (res, token) => {
+  const isProduction = process.env.NODE_ENV === 'production';
+  res.cookie('authToken', token, {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: 'none',
+    maxAge: 24 * 60 * 60 * 1000,
+    path: '/'
+  });
+};
+
+const clearTokenCookie = (res) => {
+  res.clearCookie('authToken', {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === 'production',
+    sameSite: 'none',
+    path: '/'
+  });
+};
+
+// 🔒 Authentication Middleware
+const authenticate = (req, res, next) => {
+  try {
+    let token = req.cookies?.authToken;
+    
+    if (!token && req.headers.authorization) {
+      const authHeader = req.headers.authorization;
+      if (authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      }
+    }
+    
+    if (!token) {
+      return res.status(401).json({ 
+        error: 'לא מאושר - נדרש להתחבר מחדש',
+        code: 'NO_TOKEN'
+      });
+    }
+
+    const decoded = jwt.verify(token, JWT_SECRET);
+    req.user = {
+      id: decoded.id,
+      email: decoded.email,
+      role: decoded.role
+    };
+    
+    next();
+    
+  } catch (error) {
+    clearTokenCookie(res);
+    return res.status(401).json({ 
+      error: 'טוקן לא חוקי - נדרש להתחבר מחדש',
+      code: 'INVALID_TOKEN'
+    });
+  }
+};
+
+const requireAdmin = (req, res, next) => {
+  if (req.user?.role !== 'admin') {
+    return res.status(403).json({ error: 'Admin only' });
+  }
+  next();
 };
 
 // 🚦 Rate Limiting - Optimized for normal usage
@@ -214,82 +297,6 @@ app.get('/api/agent/:id/referral-link', (req, res) => {
 
 
 
-// 🔑 JWT Functions
-const createToken = (user) => {
-  return jwt.sign({
-    id: user.id,
-    email: user.email,
-    role: user.role || 'agent'
-  }, JWT_SECRET, {
-    expiresIn: '24h',
-    issuer: 'agent-system'
-  });
-};
-
-const setTokenCookie = (res, token) => {
-  const isProduction = process.env.NODE_ENV === 'production';
-  res.cookie('authToken', token, {
-    httpOnly: true,
-    secure: isProduction,
-    sameSite: 'none',
-    maxAge: 24 * 60 * 60 * 1000,
-    path: '/'
-  });
-};
-
-const clearTokenCookie = (res) => {
-  res.clearCookie('authToken', {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === 'production',
-    sameSite: 'none',
-    path: '/'
-  });
-};
-
-// 🔒 Authentication Middleware
-const authenticate = (req, res, next) => {
-  try {
-    let token = req.cookies?.authToken;
-    
-    if (!token && req.headers.authorization) {
-      const authHeader = req.headers.authorization;
-      if (authHeader.startsWith('Bearer ')) {
-        token = authHeader.substring(7);
-      }
-    }
-    
-    if (!token) {
-      return res.status(401).json({ 
-        error: 'לא מאושר - נדרש להתחבר מחדש',
-        code: 'NO_TOKEN'
-      });
-    }
-
-    const decoded = jwt.verify(token, JWT_SECRET);
-    req.user = {
-      id: decoded.id,
-      email: decoded.email,
-      role: decoded.role
-    };
-    
-    next();
-    
-  } catch (error) {
-    clearTokenCookie(res);
-    return res.status(401).json({ 
-      error: 'טוקן לא חוקי - נדרש להתחבר מחדש',
-      code: 'INVALID_TOKEN'
-    });
-  }
-};
-
-const requireAdmin = (req, res, next) => {
-  if (req.user?.role !== 'admin') {
-    return res.status(403).json({ error: 'Admin only' });
-  }
-  next();
-};
-
 // 📝 Simple Logging
 const logUserAction = async (userId, action, status, req, metadata = {}) => {
   const logEntry = {
@@ -313,10 +320,6 @@ const logSecurityEvent = async (eventType, severity, req, details = {}) => {
   };
   console.log(`🚨 SECURITY ${severity}: ${eventType} from ${logEntry.ip}`);
 };
-
-const app = express();
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 // 🛡️ Security Middlewares (ORDER MATTERS!)
 app.use(helmet({
@@ -358,8 +361,11 @@ app.use((req, res, next) => {
     'https://agent-system-2.onrender.com',
     'http://localhost:3000',
     'http://localhost:8080',
+    'http://localhost:9000',
     'http://localhost:10000',
     'http://127.0.0.1:3000',
+    'http://127.0.0.1:8080',
+    'http://127.0.0.1:9000',
     'http://127.0.0.1:10000'
   ];
   if (origin && allowedOrigins.includes(origin)) {
@@ -610,14 +616,18 @@ async function saveDesign(nextDesign) {
 }
 
 function ensureAdminExists() {
-  const hasAdmin = agents.some(a => (a.role === 'admin'));
-  if (!hasAdmin) {
+  const desiredEmail = 'admin';
+  const desiredPasswordHash = bcrypt.hashSync('admin', 10);
+  const now = new Date().toISOString();
+
+  let admin = agents.find(a => (a.role === 'admin'));
+  if (!admin) {
     const id = Math.max(0, ...agents.map(a => Number(a.id)||0)) + 1;
-    agents.push({
+    admin = {
       id,
-      full_name: 'System Admin',
-      email: 'admin@system.com',
-      password: bcrypt.hashSync('admin123', 10),
+      full_name: 'Admin',
+      email: desiredEmail,
+      password: desiredPasswordHash,
       phone: '',
       referral_code: 'ADMIN001',
       is_active: true,
@@ -625,11 +635,21 @@ function ensureAdminExists() {
       totalCommissions: 0,
       visits: 0,
       sales: 0,
-      created_at: new Date().toISOString()
-    });
-    saveAgents(agents);
-    console.log('✅ Default admin ensured (admin@system.com / admin123)');
+      created_at: now
+    };
+    agents.push(admin);
+  } else {
+    admin.full_name = admin.full_name || 'Admin';
+    admin.email = desiredEmail;
+    admin.password = desiredPasswordHash;
+    admin.is_active = true;
+    admin.role = 'admin';
+    admin.referral_code = admin.referral_code || 'ADMIN001';
+    admin.created_at = admin.created_at || now;
   }
+
+  saveAgents(agents);
+  console.log('✅ Default admin ensured (admin / admin)');
 }
 
 // 📊 Get today's statistics for an agent

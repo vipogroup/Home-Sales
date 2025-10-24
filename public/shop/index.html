@@ -56,14 +56,74 @@
             .header h1 { font-size: 1.5rem; }
             .product-card { width: 100%; margin: 10px 0; }
         }
+        .home-actions {
+            margin: 60px auto 40px;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 32px 24px;
+            backdrop-filter: blur(10px);
+        }
+        .home-actions h2 {
+            margin-bottom: 16px;
+            font-size: 2rem;
+            color: #ffffff;
+        }
+        .home-actions p {
+            margin-bottom: 24px;
+            color: rgba(255, 255, 255, 0.85);
+            font-size: 1.05rem;
+        }
+        .home-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-bottom: 16px;
+        }
+        .home-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.2);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+            border: 2px solid rgba(255, 255, 255, 0.25);
+        }
+        .home-link:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+            background: rgba(255, 255, 255, 0.3);
+        }
+        .home-note {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.7);
+            line-height: 1.6;
+        }
+        @media (max-width: 640px) {
+            .home-actions {
+                margin: 40px auto 24px;
+                padding: 24px 16px;
+            }
+            .home-actions h2 {
+                font-size: 1.6rem;
+            }
+            .home-links {
+                flex-direction: column;
+            }
+        }
     </style>
 </head>
-<body>
+<body id="top">
     <header class="header">
         <div class="container">
             <div class="flex items-center justify-between gap-12">
                 <h1 class="m-0"><i class="fas fa-shopping-cart"></i> VIPO - רכישה קבוצתית</h1>
-                <a href="../agent/register.html" class="btn btn-outline-primary"><i class="fas fa-user-plus"></i> הצטרף כסוכן</a>
+                <a href="https://vipogroup.github.io/Home-Sales/public/agent/register.html" class="btn btn-outline-primary"><i class="fas fa-user-plus"></i> הצטרף כסוכן</a>
             </div>
         </div>
     </header>
@@ -83,6 +143,19 @@
         </div>
     </main>
 
+    <section class="home-actions">
+        <div class="container">
+            <h2>🏪 VIPO Sales System</h2>
+            <p>מערכת מכירות משולבת עם ניהול סוכנים ולוח בקרה</p>
+            <div class="home-links">
+                <a href="#top" class="home-link">🛒 דף החנות</a>
+                <a href="https://vipogroup.github.io/Home-Sales/public/admin/login.html" class="home-link">👑 כניסת מנהל</a>
+                <a href="https://vipogroup.github.io/Home-Sales/public/agent/login.html" class="home-link">🤝 כניסת סוכן</a>
+                <a href="https://vipogroup.github.io/Home-Sales/public/shop/my-orders.html" class="home-link">📦 ההזמנות שלי</a>
+            </div>
+            <p class="home-note">הערה: זו גרסה סטטית לתצוגה. לפעילות מלאה עם מסד נתונים ותשלומים, יש להריץ את שרת Node.js המקומי.</p>
+        </div>
+    </section>
     <footer>
         <div class="container">
             <p>&copy; 2025 VIPO Group Buy. כל הזכויות שמורות.</p>

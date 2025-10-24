@@ -40,5 +40,19 @@
     "role": "agent",
     "totalCommissions": 0,
     "todayVisits": 0
+  },
+  {
+    "id": 4,
+    "full_name": "System Admin",
+    "email": "admin@system.com",
+    "password": "$2b$10$KBrIUqKkN5gO3Cv7vzu2y.eXj89Uq3XvMqmCt8gxN2YIcn3tXUKqu",
+    "phone": "",
+    "referral_code": "ADMIN001",
+    "is_active": true,
+    "role": "admin",
+    "totalCommissions": 0,
+    "visits": 0,
+    "sales": 0,
+    "created_at": "2025-10-24T21:17:22.759Z"
   }
 ]
