@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>דשבורד מנהל - מערכת סוכנים</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f7fa;
+            direction: rtl;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+        
+        .header h1 {
+            font-size: 1.5rem;
+            min-width: 0;
+            flex: 1;
+        }
+        
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            .header {
+                padding: 1rem;
+                text-align: center;
+                flex-direction: column;
+            }
+            
+            .header h1 {
+                font-size: 1.2rem;
+                width: 100%;
+                margin-bottom: 1rem;
+            }
+            
+            .header .btn {
+                width: 100%;
+                margin: 0.25rem 0;
+            }
+        }
+        
+        .btn {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+        
+        .btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        .section {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+        
+        .section-header {
+            background: #f8f9fa;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid #dee2e6;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .table th,
+        .table td {
+            padding: 1rem;
+            text-align: right;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        /* Mobile table optimizations */
+        @media (max-width: 768px) {
+            .container {
+                margin: 1rem auto;
+                padding: 0 0.5rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+                gap: 0.5rem;
+            }
+            
+            .stat-card {
+                padding: 0.75rem;
+            }
+            
+            .stat-number {
+                font-size: 1.2rem;
+            }
+            
+            .section {
+                margin-bottom: 1rem;
+                overflow-x: auto;
+            }
+            
+            .section-header {
+                padding: 0.75rem 1rem;
+                font-size: 0.9rem;
+            }
+            
+            .table {
+                min-width: 600px;
+                font-size: 0.8rem;
+            }
+            
+            .table th,
+            .table td {
+                padding: 0.5rem 0.25rem;
+                white-space: nowrap;
+            }
+            
+            .btn-sm {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.7rem;
+                margin: 0.1rem;
+                display: inline-block;
+                min-width: 60px;
+            }
+            
+            /* Stack buttons vertically on very small screens */
+            @media (max-width: 480px) {
+                .table th,
+                .table td {
+                    padding: 0.4rem 0.2rem;
+                }
+                
+                .btn-sm {
+                    display: block;
+                    width: 100%;
+                    margin: 0.1rem 0;
+                    font-size: 0.75rem;
+                }
+            }
+        }
+        
+        .table th {
+            background: #f8f9fa;
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .status {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status.active {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .status.blocked {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .btn-sm {
+            padding: 0.25rem 0.5rem;
+            font-size: 0.8rem;
+            margin: 0 0.25rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn-warning {
+            background: #ffc107;
+            color: #212529;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+        
+        .error {
+            text-align: center;
+            padding: 2rem;
+            color: #dc3545;
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            border-radius: 5px;
+            margin: 1rem;
+        }
+        
+        /* 📊 Traffic Analytics Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin: 1.5rem;
+        }
+        
+        .analytics-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            border: 1px solid #dee2e6;
+        }
+        
+        .analytics-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: #333;
+            text-align: center;
+        }
+        
+        .source-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.75rem;
+            margin: 0.5rem 0;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+        
+        .source-item:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            transform: translateY(-1px);
+        }
+        
+        .source-info {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        
+        .source-icon {
+            font-size: 1.5rem;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            color: white;
+        }
+        
+        .source-icon.facebook { background: #1877f2; }
+        .source-icon.instagram { background: linear-gradient(45deg, #f09433 0%,#e6683c 25%,#dc2743 50%,#cc2366 75%,#bc1888 100%); }
+        .source-icon.tiktok { background: #000; }
+        .source-icon.google { background: #4285f4; }
+        .source-icon.whatsapp { background: #25d366; }
+        .source-icon.direct { background: #6c757d; }
+        .source-icon.referral { background: #17a2b8; }
+        
+        .source-name {
+            font-weight: bold;
+            color: #333;
+        }
+        
+        .source-stats {
+            text-align: left;
+            font-size: 0.9rem;
+        }
+        
+        .stat-value {
+            font-weight: bold;
+            color: #667eea;
+        }
+        
+        .conversion-rate {
+            font-size: 0.8rem;
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .no-data {
+            text-align: center;
+            color: #6c757d;
+            font-style: italic;
+            padding: 2rem;
+        }
+        
+        .refresh-analytics {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 1rem;
+            float: left;
+        }
+        
+        .refresh-analytics:hover {
+            background: #5a6fd8;
+        }
+        
+        @media (max-width: 768px) {
+            .analytics-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+                margin: 1rem;
+            }
+            
+            .analytics-card {
+                padding: 1rem;
+            }
+            
+            .source-item {
+                flex-direction: column;
+                text-align: center;
+                gap: 0.5rem;
+            }
+            
+            .source-stats {
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>👨‍💼 דשבורד מנהל</h1>
+        <div>
+            <button class="btn" onclick="window.open('/public/whatsapp-admin.html', '_blank')">📱 ניהול WhatsApp</button>
+            <button class="btn" onclick="loadData()">🔄 רענן</button>
+            <button class="btn" onclick="logout()">יציאה</button>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-number" id="totalAgents">-</div>
+                <div class="stat-label">סה"כ סוכנים</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="activeAgents">-</div>
+                <div class="stat-label">סוכנים פעילים</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="blockedAgents">-</div>
+                <div class="stat-label">סוכנים חסומים</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalVisits">-</div>
+                <div class="stat-label">סה"כ ביקורים</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalSales">-</div>
+                <div class="stat-label">סה"כ מכירות</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-number" id="totalRevenue">-</div>
+                <div class="stat-label">סה"כ הכנסות</div>
+            </div>
+        </div>
+        
+        <!-- 🔗 UTM Link Generator Section -->
+        <div class="section">
+            <div class="section-header">
+                🔗 יוצר קישורי UTM - מעקב מדויק לכל פלטפורמה
+            </div>
+            <div style="padding: 1.5rem;">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1rem; margin-bottom: 1.5rem;">
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">בחר סוכן:</label>
+                        <select id="utmAgentSelect" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+                            <option value="">טוען סוכנים...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">מקור התנועה:</label>
+                        <select id="utmSource" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+                            <option value="facebook">📘 פייסבוק</option>
+                            <option value="instagram">📷 אינסטגרם</option>
+                            <option value="whatsapp">💬 וואטסאפ</option>
+                            <option value="tiktok">🎵 טיקטוק</option>
+                            <option value="google">🔍 גוגל</option>
+                            <option value="youtube">📺 יוטיוב</option>
+                            <option value="linkedin">💼 לינקדאין</option>
+                            <option value="twitter">🐦 טוויטר</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">סוג הפרסום:</label>
+                        <select id="utmMedium" style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+                            <option value="social">📱 פוסט רגיל</option>
+                            <option value="story">📸 סטורי</option>
+                            <option value="paid">💰 פרסומת בתשלום</option>
+                            <option value="messaging">💬 הודעה אישית</option>
+                            <option value="video">🎥 וידאו</option>
+                            <option value="organic">🌱 אורגני</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="display: block; margin-bottom: 0.5rem; font-weight: bold;">שם הקמפיין:</label>
+                        <input type="text" id="utmCampaign" placeholder="chair_winter_sale" 
+                               style="width: 100%; padding: 0.5rem; border: 1px solid #ddd; border-radius: 5px;">
+                    </div>
+                </div>
+                
+                <button onclick="generateUTMLink()" 
+                        style="background: #667eea; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 5px; cursor: pointer; font-size: 1rem; margin-bottom: 1rem;">
+                    🔗 צור קישור UTM
+                </button>
+                
+                <div id="utmResult" style="display: none;">
+                    <div style="background: #f8f9fa; padding: 1rem; border-radius: 8px; border: 1px solid #dee2e6;">
+                        <h4 style="margin-bottom: 0.5rem; color: #333;">📋 הקישור שלך מוכן:</h4>
+                        <div style="background: white; padding: 0.75rem; border-radius: 5px; border: 1px solid #ddd; margin: 0.5rem 0; word-break: break-all; font-family: monospace; font-size: 0.9rem;" id="generatedLink"></div>
+                        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                            <button onclick="copyUTMLink()" style="background: #28a745; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+                                📋 העתק קישור
+                            </button>
+                            <button onclick="shareWhatsApp()" style="background: #25d366; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+                                💬 שתף בוואטסאפ
+                            </button>
+                            <button onclick="shareFacebook()" style="background: #1877f2; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer;">
+                                📘 שתף בפייסבוק
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div style="background: #e3f2fd; padding: 1rem; border-radius: 8px; border-left: 4px solid #2196f3; margin-top: 1rem;">
+                    <strong>💡 איך זה עובד:</strong><br>
+                    1. בחר סוכן ומקור תנועה<br>
+                    2. תקבל קישור מותאם אישית<br>
+                    3. שתף את הקישור ברשת שבחרת<br>
+                    4. עקוב אחר התוצאות בדשבורד האנליטיקס למטה
+                </div>
+            </div>
+        </div>
+
+        <!-- 📊 Traffic Source Analytics Section -->
+        <div class="section">
+            <div class="section-header">
+                📊 אנליטיקס מקורות תנועה - מאיפה מגיעים הלקוחות?
+            </div>
+            <div id="trafficAnalyticsContainer">
+                <div class="loading">טוען נתוני אנליטיקס...</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <div class="section-header">
+                📋 רשימת סוכנים
+            </div>
+            <div id="agentsContainer">
+                <div class="loading">טוען נתונים...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadData();
+            loadTrafficAnalytics();
+            populateAgentSelect();
+            
+            // Auto refresh every 30 seconds to show updated data
+            setInterval(() => {
+                loadData();
+                loadTrafficAnalytics();
+            }, 30000);
+        });
+        
+        async function loadData() {
+            console.log('Loading agents data...');
+            
+            const container = document.getElementById('agentsContainer');
+            container.innerHTML = '<div class="loading">טוען נתונים...</div>';
+            
+            try {
+                const response = await fetch('/api/agents/all');
+                console.log('Response status:', response.status);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Response data:', data);
+                
+                if (data.success && data.agents && Array.isArray(data.agents)) {
+                    displayAgents(data.agents);
+                    updateStats(data.agents);
+                } else {
+                    throw new Error('Invalid data format');
+                }
+                
+            } catch (error) {
+                console.error('Error loading data:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        ❌ שגיאה בטעינת נתונים: ${error.message}<br>
+                        <button onclick="loadData()" style="margin-top: 10px; padding: 5px 15px;">נסה שוב</button>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayAgents(agents) {
+            const container = document.getElementById('agentsContainer');
+            
+            if (agents.length === 0) {
+                container.innerHTML = '<div class="loading">אין סוכנים במערכת</div>';
+                return;
+            }
+            
+            const tableHTML = `
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>שם</th>
+                            <th>אימייל</th>
+                            <th>סטטוס</th>
+                            <th>ביקורים</th>
+                            <th>מכירות</th>
+                            <th>עמלות</th>
+                            <th>קוד הפניה</th>
+                            <th>פעולות</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${agents.map(agent => `
+                            <tr>
+                                <td>${agent.full_name || 'לא צוין'}</td>
+                                <td>${agent.email}</td>
+                                <td>
+                                    <span class="status ${agent.is_active ? 'active' : 'blocked'}">
+                                        ${agent.is_active ? 'פעיל' : 'חסום'}
+                                    </span>
+                                </td>
+                                <td>${agent.visits || 0}</td>
+                                <td>${agent.sales || 0}</td>
+                                <td>₪${agent.totalCommissions || 0}</td>
+                                <td>${agent.referral_code || 'לא צוין'}</td>
+                                <td>
+                                    ${agent.role !== 'admin' ? `
+                                        <button class="btn-sm btn-success" onclick="openAgentDashboard(${agent.id}, '${agent.email}')" 
+                                                style="background: #007bff; margin-left: 5px;" title="כניסה לדשבורד הסוכן">
+                                            👤 דשבורד
+                                        </button>
+                                        <button class="btn-sm" onclick="resetAgentPassword(${agent.id}, '${agent.full_name || 'Unknown'}', '${agent.phone || ''}')" 
+                                                style="background: #ff9500; color: white; margin-left: 5px;" title="איפוס סיסמה">
+                                            🔄 איפוס סיסמה
+                                        </button>
+                                        <button class="btn-sm ${agent.is_active ? 'btn-warning' : 'btn-success'}" 
+                                                onclick="toggleAgent(${agent.id}, ${agent.is_active})">
+                                            ${agent.is_active ? '🚫 חסום' : '✅ הפעל'}
+                                        </button>
+                                        <button class="btn-sm btn-danger" onclick="deleteAgent(${agent.id})">
+                                            🗑️ מחק
+                                        </button>
+                                    ` : '<span style="color: #666;">מנהל מערכת</span>'}
+                                </td>
+                            </tr>`).join('')}
+                    </tbody>
+                </table>
+            `;
+            
+            container.innerHTML = tableHTML;
+        }
+        
+        function updateStats(agents) {
+            const total = agents.length;
+            const active = agents.filter(a => a.is_active).length;
+            const blocked = agents.filter(a => !a.is_active).length;
+            const totalVisits = agents.reduce((sum, a) => sum + (a.visits || 0), 0);
+            const totalSales = agents.reduce((sum, a) => sum + (a.sales || 0), 0);
+            const totalRevenue = agents.reduce((sum, a) => sum + (a.totalCommissions || 0), 0);
+            
+            document.getElementById('totalAgents').textContent = total;
+            document.getElementById('activeAgents').textContent = active;
+            document.getElementById('blockedAgents').textContent = blocked;
+            document.getElementById('totalVisits').textContent = totalVisits;
+            document.getElementById('totalSales').textContent = totalSales;
+            document.getElementById('totalRevenue').textContent = `₪${totalRevenue.toFixed(0)}`;
+        }
+        
+        // 📊 Load Traffic Analytics
+        async function loadTrafficAnalytics() {
+            console.log('Loading traffic analytics...');
+            
+            const container = document.getElementById('trafficAnalyticsContainer');
+            container.innerHTML = '<div class="loading">טוען נתוני אנליטיקס...</div>';
+            
+            try {
+                const response = await fetch('/api/analytics/traffic-sources');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Analytics data:', data);
+                
+                if (data.success && data.analytics) {
+                    displayTrafficAnalytics(data.analytics);
+                } else {
+                    throw new Error('Invalid analytics data format');
+                }
+                
+            } catch (error) {
+                console.error('Error loading analytics:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        ❌ שגיאה בטעינת נתוני אנליטיקס: ${error.message}<br>
+                        <button onclick="loadTrafficAnalytics()" style="margin-top: 10px; padding: 5px 15px;">נסה שוב</button>
+                    </div>
+                `;
+            }
+        }
+        
+        // Display traffic analytics
+        function displayTrafficAnalytics(analytics) {
+            const container = document.getElementById('trafficAnalyticsContainer');
+            
+            const sourceNames = {
+                facebook: 'פייסבוק',
+                instagram: 'אינסטגרם', 
+                tiktok: 'טיקטוק',
+                google: 'גוגל',
+                whatsapp: 'וואטסאפ',
+                direct: 'ישיר',
+                referral: 'הפניה'
+            };
+            
+            const sourceIcons = {
+                facebook: '📘',
+                instagram: '📷',
+                tiktok: '🎵',
+                google: '🔍',
+                whatsapp: '💬',
+                direct: '🌐',
+                referral: '🔗'
+            };
+            
+            // Calculate total visits and sales for percentages
+            const totalVisits = Object.values(analytics.sources).reduce((sum, source) => sum + source.visits, 0);
+            const totalSales = Object.values(analytics.sources).reduce((sum, source) => sum + source.sales, 0);
+            
+            let analyticsHTML = `
+                <button class="refresh-analytics" onclick="loadTrafficAnalytics()">
+                    🔄 רענן אנליטיקס
+                </button>
+                <div style="clear: both;"></div>
+                
+                <div class="analytics-grid">
+                    <div class="analytics-card">
+                        <div class="analytics-title">📊 ביקורים לפי מקור</div>
+            `;
+            
+            // Sort sources by visits (descending)
+            const sortedByVisits = Object.entries(analytics.sources)
+                .sort(([,a], [,b]) => b.visits - a.visits);
+            
+            if (totalVisits === 0) {
+                analyticsHTML += '<div class="no-data">עדיין אין נתוני ביקורים</div>';
+            } else {
+                sortedByVisits.forEach(([source, data]) => {
+                    if (data.visits > 0) {
+                        const percentage = ((data.visits / totalVisits) * 100).toFixed(1);
+                        analyticsHTML += `
+                            <div class="source-item">
+                                <div class="source-info">
+                                    <div class="source-icon ${source}">${sourceIcons[source]}</div>
+                                    <div class="source-name">${sourceNames[source]}</div>
+                                </div>
+                                <div class="source-stats">
+                                    <div><span class="stat-value">${data.visits}</span> ביקורים</div>
+                                    <div>${percentage}% מהתנועה</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
+            analyticsHTML += `
+                    </div>
+                    
+                    <div class="analytics-card">
+                        <div class="analytics-title">💰 מכירות לפי מקור</div>
+            `;
+            
+            // Sort sources by sales (descending)
+            const sortedBySales = Object.entries(analytics.sources)
+                .sort(([,a], [,b]) => b.sales - a.sales);
+            
+            if (totalSales === 0) {
+                analyticsHTML += '<div class="no-data">עדיין אין נתוני מכירות</div>';
+            } else {
+                sortedBySales.forEach(([source, data]) => {
+                    if (data.sales > 0) {
+                        const conversionRate = data.visits > 0 ? ((data.sales / data.visits) * 100).toFixed(1) : '0';
+                        const percentage = ((data.sales / totalSales) * 100).toFixed(1);
+                        
+                        analyticsHTML += `
+                            <div class="source-item">
+                                <div class="source-info">
+                                    <div class="source-icon ${source}">${sourceIcons[source]}</div>
+                                    <div class="source-name">${sourceNames[source]}</div>
+                                </div>
+                                <div class="source-stats">
+                                    <div><span class="stat-value">${data.sales}</span> מכירות</div>
+                                    <div>₪<span class="stat-value">${data.revenue}</span> הכנסות</div>
+                                    <div class="conversion-rate">${conversionRate}% המרה</div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            }
+            
+            analyticsHTML += `
+                    </div>
+                </div>
+                
+                <div style="margin: 1rem; padding: 1rem; background: #e8f5e8; border-radius: 8px; border-left: 4px solid #28a745;">
+                    <strong>✅ מעקב מדויק:</strong> השתמש ביוצר הקישורים למעלה כדי ליצור UTM links מותאמים לכל פלטפורמה.<br>
+                    <strong>📊 נתונים אמיתיים:</strong> האנליטיקס מציג רק ביקורים שנרשמו עם מעקב מקור תנועה מדויק.
+                </div>
+            `;
+            
+            container.innerHTML = analyticsHTML;
+        }
+        
+        async function toggleAgent(agentId, currentStatus) {
+            const action = currentStatus ? 'חסימת' : 'הפעלת';
+            if (!confirm(`האם אתה בטוח שברצונך ${action} הסוכן?`)) return;
+            
+            try {
+                const response = await fetch(`/api/admin/agent/${agentId}/toggle-status`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    alert('הסטטוס עודכן בהצלחה');
+                    loadData();
+                } else {
+                    alert('שגיאה בעדכון הסטטוס');
+                }
+            } catch (error) {
+                alert('שגיאה בחיבור לשרת');
+            }
+        }
+        
+        async function deleteAgent(agentId, email) {
+            if (!confirm(`האם אתה בטוח שברצונך למחוק את הסוכן "${email}"?`)) return;
+            
+            const doubleConfirm = prompt('כדי לאשר את המחיקה, הקלד "מחק":');
+            if (doubleConfirm !== 'מחק') {
+                alert('המחיקה בוטלה');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`/api/admin/agent/${agentId}`, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                if (response.ok) {
+                    alert('הסוכן נמחק בהצלחה');
+                    loadData();
+                } else {
+                    alert('שגיאה במחיקת הסוכן');
+                }
+            } catch (error) {
+                alert('שגיאה בחיבור לשרת');
+            }
+        }
+        
+        async function openAgentDashboard(agentId, agentEmail) {
+            try {
+                // Get agent data from server
+                const response = await fetch(`/api/agent/${agentId}`);
+                
+                if (response.ok) {
+                    const agentData = await response.json();
+                    
+                    if (agentData.success && agentData.agent) {
+                        // Save agent data to localStorage for the dashboard
+                        localStorage.setItem('currentAgent', JSON.stringify(agentData.agent));
+                        localStorage.setItem('agentLoggedIn', 'true');
+                        localStorage.setItem('adminViewingAgent', 'true'); // Flag to indicate admin is viewing
+                        
+                        // Open agent dashboard in new tab
+                        window.open('/agent-dashboard.html', '_blank');
+                        
+                        console.log('Opened dashboard for agent:', agentData.agent.full_name);
+                    } else {
+                        alert('שגיאה בטעינת נתוני הסוכן');
+                    }
+                } else {
+                    alert('שגיאה בגישה לנתוני הסוכן');
+                }
+            } catch (error) {
+                console.error('Error opening agent dashboard:', error);
+                alert('שגיאה בחיבור לשרת');
+            }
+        }
+        
+        // Reset agent password function
+        async function resetAgentPassword(agentId, agentName, agentPhone) {
+            if (!confirm(`האם אתה בטוח שברצונך לאפס את הסיסמה של ${agentName}?`)) {
+                return;
+            }
+            
+            try {
+                console.log('Resetting password for agent:', agentId, agentName, agentPhone);
+                
+                const response = await fetch(`/api/agent/${agentId}/reset-password`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    console.log('Password reset result:', result);
+                    
+                    // Show success message with temp password (for development)
+                    const message = `✅ הסיסמה אופסה בהצלחה!
+                    
+🔑 הסיסמה הזמנית: ${result.tempPassword}
+
+📱 הודעת וואטסאפ נשלחה ל: ${agentPhone}
+
+💡 הסוכן יכול להתחבר עם הסיסמה החדשה.`;
+                    
+                    alert(message);
+                    
+                    // Refresh the agents list
+                    loadData();
+                } else {
+                    const error = await response.json();
+                    alert(`שגיאה באיפוס הסיסמה: ${error.error || 'שגיאה לא ידועה'}`);
+                }
+            } catch (error) {
+                console.error('Error resetting password:', error);
+                alert('שגיאה בחיבור לשרת. נסה שוב מאוחר יותר.');
+            }
+        }
+        
+        function logout() {
+            if (confirm('האם אתה בטוח שברצונך להתנתק?')) {
+                window.location.href = '/admin-login.html';
+            }
+        }
+        
+        // 🔗 UTM Link Generator Functions
+        
+        // Populate agent select dropdown
+        async function populateAgentSelect() {
+            try {
+                const response = await fetch('/api/agents/all');
+                if (response.ok) {
+                    const data = await response.json();
+                    const select = document.getElementById('utmAgentSelect');
+                    
+                    select.innerHTML = '<option value="">בחר סוכן...</option>';
+                    
+                    if (data.success && data.agents) {
+                        data.agents.forEach(agent => {
+                            if (agent.role !== 'admin') {
+                                const option = document.createElement('option');
+                                option.value = agent.referral_code || '';
+                                option.textContent = `${agent.full_name} (${agent.email})`;
+                                select.appendChild(option);
+                            }
+                        });
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading agents for UTM:', error);
+            }
+        }
+        
+        // Generate UTM link
+        function generateUTMLink() {
+            const agentCode = document.getElementById('utmAgentSelect').value;
+            const source = document.getElementById('utmSource').value;
+            const medium = document.getElementById('utmMedium').value;
+            const campaign = document.getElementById('utmCampaign').value || 'default';
+            
+            if (!agentCode) {
+                alert('אנא בחר סוכן');
+                return;
+            }
+            
+            // Build UTM link
+            const baseUrl = 'https://agent-system-2.onrender.com/vc/index.html';
+            const params = new URLSearchParams();
+            
+            // Add referral code
+            params.append('ref', agentCode);
+            
+            // Add UTM parameters
+            params.append('utm_source', source);
+            params.append('utm_medium', medium);
+            params.append('utm_campaign', campaign);
+            
+            const fullUrl = `${baseUrl}?${params.toString()}`;
+            
+            // Display result
+            document.getElementById('generatedLink').textContent = fullUrl;
+            document.getElementById('utmResult').style.display = 'block';
+            
+            // Store for sharing functions
+            window.currentUTMLink = fullUrl;
+            
+            console.log('Generated UTM link:', fullUrl);
+        }
+        
+        // Copy UTM link to clipboard
+        async function copyUTMLink() {
+            try {
+                await navigator.clipboard.writeText(window.currentUTMLink);
+                
+                // Visual feedback
+                const button = event.target;
+                const originalText = button.textContent;
+                button.textContent = '✅ הועתק!';
+                button.style.background = '#28a745';
+                
+                setTimeout(() => {
+                    button.textContent = originalText;
+                    button.style.background = '#28a745';
+                }, 2000);
+                
+            } catch (error) {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = window.currentUTMLink;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                alert('הקישור הועתק ללוח!');
+            }
+        }
+        
+        // Share on WhatsApp
+        function shareWhatsApp() {
+            const message = `🪑 כורסת עיסוי ביתית במחיר מיוחד!\n\n${window.currentUTMLink}`;
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(message)}`;
+            window.open(whatsappUrl, '_blank');
+        }
+        
+        // Share on Facebook
+        function shareFacebook() {
+            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(window.currentUTMLink)}`;
+            window.open(facebookUrl, '_blank', 'width=600,height=400');
+        }
+    </script>
+</body>
+</html>
