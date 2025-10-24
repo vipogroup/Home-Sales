@@ -2426,13 +2426,6 @@ app.get('/api/analytics/traffic-sources', async (req, res) => {
 
 // Static files already configured above
 
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
-
-app.listen(process.env.PORT || 3000);
-
 // 💳 PayPlus Payment Integration Endpoints
 
 // Create PayPlus payment
@@ -2650,3 +2643,10 @@ app.get('/payment-failed', (req, res) => {
     </html>
   `);
 });
+
+// 404 handler - MUST BE LAST
+app.use((req, res) => {
+  res.status(404).json({ error: 'Not found' });
+});
+
+app.listen(process.env.PORT || 3000);
