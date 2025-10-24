@@ -377,18 +377,11 @@ app.use(express.json({ limit: '10mb' })); // JSON parsing with size limit
 app.use(express.urlencoded({ extended: true, limit: '10mb' })); // URL encoding
 
 // ---- HEALTH (single source of truth) ----
-const HEALTH_COMMIT = process.env.RENDER_GIT_COMMIT || process.env.VERCEL_GIT_COMMIT_SHA || process.env.GIT_COMMIT || process.env.COMMIT_SHA || null;
-const healthHandler = (req, res) => {
+function healthHandler(req, res) {
   res.set('Cache-Control', 'no-store');
-  res.status(200).json({
-    ok: true,
-    env: process.env.NODE_ENV || 'development',
-    uptime: process.uptime(),
-    timestamp: new Date().toISOString(),
-    commit: HEALTH_COMMIT,
-    message: 'Agent System is running - SECURED ✅'
-  });
-};
+  res.json({ ok: true, message: 'Agent System is running', timestamp: new Date().toISOString() });
+}
+
 app.get('/health', healthHandler);
 app.get('/api/health', healthHandler);
 console.log('✅ Health endpoints active at /health and /api/health');

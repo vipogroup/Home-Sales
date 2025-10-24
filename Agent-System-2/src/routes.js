@@ -71,6 +71,11 @@ https://agent-system-2.onrender.com/public/dashboard-agent.html
 }
 
 export async function registerRoutes(app) {
+  app.get('/api/health', (req, res) => {
+    res.set('Cache-Control', 'no-store');
+    res.json({ ok: true });
+  });
+
   // Health check endpoint
   app.get('/health', (req, res) => res.json({ ok: true }));
 
