@@ -379,7 +379,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' })); // URL encoding
 // ---- HEALTH (single source of truth) ----
 function healthHandler(req, res) {
   res.set('Cache-Control', 'no-store');
-  res.json({ ok: true, message: 'Agent System is running', timestamp: new Date().toISOString() });
+  res.json({
+    ok: true,
+    message: 'Agent System is running - SECURED ✅',
+    timestamp: new Date().toISOString()
+  });
 }
 
 app.get('/health', healthHandler);
