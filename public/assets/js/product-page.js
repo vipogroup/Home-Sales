@@ -1,5 +1,6 @@
 import { loadDesignSettings } from './design.js';
 import { api } from './api.js';
+import { demoProducts } from './demo-products.js';
 
 const API_BASE = window.location.origin;
 let currentProduct = null;
@@ -19,10 +20,28 @@ async function loadProduct(){
   if(!productId){ showError(); return; }
   try {
     const data = await api.get(`/products/${productId}`);
-    if(!data.success){ showError(); return; }
+    if(!data.success || !data.data){
+      useFallback(productId);
+      return;
+    }
     currentProduct = data.data;
     displayProduct(currentProduct);
-  } catch(e){ showError(); }
+  } catch(e){
+    console.warn('Failed to load product from API, using demo data:', e);
+    useFallback(productId);
+  }
+}
+
+function useFallback(productId){
+  const fallback = demoProducts.find(p => Number(p.id) === Number(productId));
+  if (!fallback){ showError(); return; }
+  const info = document.getElementById('error');
+  if (info){
+    info.classList.remove('hidden');
+    info.innerHTML = '<i class="fas fa-info-circle"></i><h3>מוצר לדוגמה</h3><p>הנתונים מוצגים מגרסת דמו מאחר שלא הצלחנו לקבל מידע מהשרת.</p>';
+  }
+  currentProduct = fallback;
+  displayProduct(currentProduct);
 }
 
 function showError(){

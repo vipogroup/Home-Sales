@@ -1,23 +1,43 @@
 import { loadDesignSettings } from './design.js';
 import { api } from './api.js';
+import { demoProducts } from './demo-products.js';
 
 const API_BASE = window.location.origin;
 
 async function loadProducts() {
-  document.getElementById('loading')?.classList.remove('hidden');
-  document.getElementById('error')?.classList.add('hidden');
+  const loadingEl = document.getElementById('loading');
+  const errorEl = document.getElementById('error');
   const grid = document.getElementById('productsGrid');
+  loadingEl?.classList.remove('hidden');
+  errorEl?.classList.add('hidden');
   grid.innerHTML = '';
+
+  let products = [];
+  let usedFallback = false;
+
   try {
     const data = await api.get('/products');
-    if (!data.success) throw new Error('API error');
-    const products = data.data || [];
-    if (!products.length) grid.innerHTML = '<div class="error">אין מוצרים</div>';
+    if (!data?.success) throw new Error('API error');
+    products = Array.isArray(data.data) ? data.data : [];
+  } catch (e) {
+    console.warn('Failed to load products from API, using demo data:', e);
+    products = demoProducts;
+    usedFallback = true;
+  }
+
+  if (!products.length) {
+    products = demoProducts;
+    usedFallback = true;
+  }
+
+  if (!products.length) {
+    grid.innerHTML = '<div class="error">אין מוצרים להצגה</div>';
+  } else {
     grid.innerHTML = products.map(p => {
       const pct = Math.max(0, Math.min(100, Number(p.progress||0)));
       const band = Math.round(pct/10)*10; // 0..100 step of 10
       const widthClass = `w-${band}`;
-      return `<article class="product-card">
+      return `<article class="product-card${usedFallback ? ' product-card-demo' : ''}">
           <img src="${(p.details && p.details.images && p.details.images[0]) || p.image}" alt="${p.name}" class="product-image"/>
           <div class="product-info">
               <h3 class="product-title">${p.name}</h3>
@@ -47,10 +67,12 @@ async function loadProducts() {
     grid.querySelectorAll('button[data-action="openJoin"]').forEach(btn =>
       btn.addEventListener('click', () => openJoin(btn.getAttribute('data-id')))
     );
-  } catch (e) {
-    document.getElementById('error')?.classList.remove('hidden');
-  } finally {
-    document.getElementById('loading')?.classList.add('hidden');
+  }
+
+  loadingEl?.classList.add('hidden');
+  if (usedFallback) {
+    errorEl?.classList.remove('hidden');
+    errorEl.innerHTML = '<i class="fas fa-info-circle"></i><h3>מציג מוצרים לדוגמה</h3><p>לא הצלחנו להתחבר לשרת, מוצגים נתוני הדגמה.</p>';
   }
 }
 
